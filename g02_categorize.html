@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 2 — Categorize!</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1F3864,#185FA5);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}
+h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}
+.sub{color:#a8d4f5;font-size:.85rem;text-align:center;margin-bottom:14px}
+.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:14px}
+.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}
+.hl{font-size:.65rem;color:#a8d4f5;text-transform:uppercase;text-align:center}
+.item-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:800px;width:100%;background:rgba(0,0,0,.2);border-radius:12px;padding:12px;margin-bottom:14px;min-height:60px}
+.item-chip{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 14px;font-size:.85rem;cursor:pointer;transition:all .15s;user-select:none}
+.item-chip:hover{background:rgba(255,255,255,.28);transform:translateY(-2px)}
+.item-chip.selected{background:#FFD166;color:#1F3864;border-color:#FFD166;font-weight:700}
+.item-chip.correct{background:rgba(45,180,80,.35);border-color:#2db450;color:#4ade80;cursor:default}
+.item-chip.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171;animation:shake .3s}
+.cats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;max-width:800px;width:100%;margin-bottom:14px}
+.cat-zone{background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.25);border-radius:12px;padding:10px;min-height:80px;cursor:pointer;transition:all .15s}
+.cat-zone:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.13)}
+.cat-zone.highlight{border-color:#FFD166;background:rgba(255,209,102,.1)}
+.cat-zone.correct{border-color:#2db450;border-style:solid}
+.cat-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FFD166;margin-bottom:6px}
+.cat-items{display:flex;flex-wrap:wrap;gap:5px}
+.cat-item{background:rgba(45,180,80,.25);border-radius:6px;padding:3px 8px;font-size:.78rem;color:#4ade80}
+.msg{min-height:32px;text-align:center;font-size:.95rem;font-weight:700;margin-bottom:8px;color:#FFD166}
+.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#1F3864;transition:transform .1s}
+.btn:hover{transform:scale(1.04)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}
+.modal{background:#1F3864;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:400px}
+.modal h2{color:#FFD166;font-size:1.8rem;margin-bottom:10px}
+.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}
+</style></head><body>
+<h1>🏕️ Categorize!</h1>
+<p class="sub">Activity 2 — Select a card, then click the right category to place it!</p>
+<div class="hud">
+  <div><div class="hv" id="score">0</div><div class="hl">Score</div></div>
+  <div><div class="hv" id="left">0</div><div class="hl">Left</div></div>
+  <div><div class="hv" id="errors">0</div><div class="hl">Errors</div></div>
+</div>
+<div class="item-pool" id="pool"></div>
+<div class="cats-grid" id="catsGrid"></div>
+<div class="msg" id="msg">Select a card above, then click its category below.</div>
+<button class="btn" onclick="init()">Restart</button>
+<div class="overlay" id="overlay"><div class="modal">
+  <h2>Sorted!</h2><div class="score-big" id="finalScore"></div>
+  <p id="finalMsg" style="color:#a8d4f5"></p>
+  <button class="btn" style="margin-top:14px" onclick="init()">Play again</button>
+</div></div>
+<script>
+const CATS={
+  "Personal items":["Backpack","Camera","Journal","Book","Souvenir","Sketchbook","Music player","Stuffed animal","Clothes","Shoes","Socks","Hat"],
+  "Camp food":["Marshmallows","Granola bar","S'mores","Hot dog","Burger","Lemonade","Snacks","Candy","Soup","Sandwich"],
+  "Nature & wilderness":["Trail","Forest","Lake","Mountain","River","Wildlife","Insects","Nest","Tracks","Campfire"],
+  "Camp people":["Counselor","Lifeguard","Cook","Nurse","Camper","Bunkmate","Teammate","Leader"],
+  "Camp places":["Mess hall","Cabin","Infirmary","Dock","Archery range","Swimming area","Climbing wall","Camp store"],
+  "Camp equipment":["Flashlight","Sleeping bag","Tent","Compass","Water bottle","Sunscreen","Bug spray","Life jacket","Rain poncho","Map"],
+};
+let selected=null,score=0,errors=0,placed=0,total=0;
+function init(){
+  selected=null;score=0;errors=0;placed=0;
+  document.getElementById('overlay').style.display='none';
+  const pool=document.getElementById('pool');pool.innerHTML='';
+  const grid=document.getElementById('catsGrid');grid.innerHTML='';
+  // Pick 18 random items across categories
+  const items=[];
+  Object.entries(CATS).forEach(([cat,arr])=>{
+    shuffle([...arr]).slice(0,3).forEach(item=>items.push({item,cat}));
+  });
+  total=items.length;
+  document.getElementById('left').textContent=total;
+  shuffle(items).forEach(({item,cat})=>{
+    const chip=document.createElement('div');
+    chip.className='item-chip';chip.textContent=item;chip.dataset.cat=cat;
+    chip.onclick=()=>selectChip(chip);pool.appendChild(chip);
+  });
+  Object.keys(CATS).forEach(cat=>{
+    const zone=document.createElement('div');zone.className='cat-zone';
+    zone.innerHTML=`<div class="cat-label">${cat}</div><div class="cat-items" id="zone-${cat.replace(/ /g,'_')}"></div>`;
+    zone.onclick=()=>dropOnCat(cat);grid.appendChild(zone);
+  });
+  updateHud();
+}
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function selectChip(chip){
+  document.querySelectorAll('.item-chip').forEach(c=>c.classList.remove('selected'));
+  if(selected===chip){selected=null;}else{chip.classList.add('selected');selected=chip;}
+}
+function dropOnCat(cat){
+  if(!selected)return;
+  const correctCat=selected.dataset.cat;
+  if(cat===correctCat){
+    score+=10;placed++;
+    const zone=document.getElementById('zone-'+cat.replace(/ /g,'_'));
+    const span=document.createElement('span');span.className='cat-item';span.textContent=selected.textContent;zone.appendChild(span);
+    selected.classList.remove('selected');selected.classList.add('correct');selected.onclick=null;
+    document.getElementById('msg').textContent='✅ Correct! +10 pts';
+    selected=null;
+    if(placed>=total){setTimeout(endGame,600);}
+  }else{
+    errors++;score=Math.max(0,score-3);
+    selected.classList.add('wrong');
+    document.getElementById('msg').textContent='❌ Not quite! Try a different category.';
+    setTimeout(()=>{selected&&selected.classList.remove('wrong');},500);
+  }
+  document.getElementById('left').textContent=total-placed;
+  updateHud();
+}
+function updateHud(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('errors').textContent=errors;
+}
+function endGame(){
+  document.getElementById('finalScore').textContent=score+' / '+(total*10);
+  const pct=score/(total*10);
+  document.getElementById('finalMsg').textContent=pct>.8?"Amazing sorting skills! 🏆":pct>.5?"Good job! Keep practising! 🌟":"Review your categories and try again! 💪";
+  document.getElementById('overlay').style.display='flex';
+}
+init();
+</script></body></html>

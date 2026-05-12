@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 15 — Camp Comparison</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a4a2e,#0d2b1a);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#a8e6c0;font-size:.85rem;text-align:center;margin-bottom:12px}.camps-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:760px;width:100%;margin-bottom:14px}.camp-card{border-radius:14px;padding:14px}.cw{background:rgba(45,138,94,.2);border:1.5px solid #2d8a5e}.cs{background:rgba(24,95,165,.2);border:1.5px solid #185FA5}.camp-name{font-size:1.1rem;font-weight:700;color:#FFD166;margin-bottom:8px}.camp-detail{font-size:.82rem;line-height:1.7;color:#eee}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#a8e6c0;text-transform:uppercase;text-align:center}.q-card{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 22px;max-width:640px;width:100%;margin-bottom:12px}.q-num{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.q-text{font-size:1rem;line-height:1.55;margin-bottom:12px}.choices{display:flex;flex-direction:column;gap:8px}.choice{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:11px 16px;cursor:pointer;font-size:.88rem;transition:all .15s}.choice:hover{background:rgba(255,255,255,.2)}.choice.correct{background:rgba(45,180,80,.35);border-color:#2db450;color:#4ade80}.choice.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171}.msg{min-height:30px;text-align:center;font-size:.9rem;font-weight:700;color:#FFD166;margin:6px 0}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#1a4a2e}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#1a4a2e;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:400px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}</style></head><body>
+<h1>🏕️ Camp Comparison</h1><p class="sub">Activity 15 — Read the camp descriptions and answer the comparison questions!</p>
+<div class="camps-row">
+  <div class="camp-card cw"><div class="camp-name">🌲 Camp Wildwood</div><div class="camp-detail">📍 Deep forest, mountains<br>🏃 Hiking, rock climbing, kayaking, survival skills<br>🏕️ Tents<br>🍳 Outdoor cooking<br>⏱️ 2 weeks — $950<br>📵 No phones allowed</div></div>
+  <div class="camp-card cs"><div class="camp-name">☀️ Camp Sunburst</div><div class="camp-detail">📍 Near a lake, open fields<br>🎨 Swimming, arts & crafts, team sports, drama<br>🏠 Cabins with bunk beds<br>🍽️ Mess hall buffet<br>⏱️ 1 week — $950<br>🎭 Theme days every day</div></div>
+</div>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/8</div><div class="hl">Question</div></div></div>
+<div class="q-card"><div class="q-num" id="qNum"></div><div class="q-text" id="qText"></div><div class="choices" id="choices"></div></div>
+<div class="msg" id="msg"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">All done!</h2><div class="score-big" id="fs"></div><p style="color:#a8e6c0" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const QS=[
+  {q:"Which camp has MORE physical and outdoor activities?",a:"Camp Wildwood",opts:["Camp Wildwood","Camp Sunburst","Both the same"],hint:"Wildwood has hiking, rock climbing, kayaking AND survival — more physical activities."},
+  {q:"Which camp would be BETTER for someone who loves art?",a:"Camp Sunburst",opts:["Camp Wildwood","Camp Sunburst","Neither camp"],hint:"Sunburst offers arts & crafts and drama — perfect for creative campers!"},
+  {q:"Which camp is MORE expensive per day?",a:"Camp Sunburst",opts:["Camp Wildwood","Camp Sunburst","They cost the same per day"],hint:"Sunburst: $950/week = $135/day. Wildwood: $950/2 weeks = $67/day. Sunburst is pricier per day!"},
+  {q:"Which camp is SHORTER?",a:"Camp Sunburst",opts:["Camp Wildwood","Camp Sunburst","They are the same length"],hint:"Sunburst is 1 week. Wildwood is 2 weeks. Sunburst is shorter."},
+  {q:"Which camp is THE MOST adventurous?",a:"Camp Wildwood",opts:["Camp Wildwood","Camp Sunburst","They are equally adventurous"],hint:"Wilderness survival, rock climbing, no phones — Wildwood is the most adventurous."},
+  {q:"What is ONE similarity between the two camps?",a:"Same price ($950)",opts:["Same price ($950)","Same location","Same activities","Same accommodation"],hint:"Both camps cost exactly $950 — that is their main similarity!"},
+  {q:"Which camp has THE BEST accommodation for someone who hates sleeping outdoors?",a:"Camp Sunburst",opts:["Camp Wildwood","Camp Sunburst","They are equally comfortable"],hint:"Sunburst has cabins with bunk beds. Wildwood uses tents — Sunburst is more comfortable."},
+  {q:"Which camp is MORE suitable for a team sports lover?",a:"Camp Sunburst",opts:["Camp Wildwood","Camp Sunburst","Both are equally good"],hint:"Sunburst has team sports and drama. Wildwood is focused on individual wilderness skills."},
+];
+let qs=[],idx=0,score=0;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){qs=shuffle([...QS]);idx=0;score=0;document.getElementById('overlay').style.display='none';render()}
+function render(){
+  if(idx>=qs.length){end();return}
+  const q=qs[idx];
+  document.getElementById('qNum').textContent='Question '+(idx+1)+' of '+qs.length;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('msg').textContent='';
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  shuffle([...q.opts]).forEach(o=>{
+    const d=document.createElement('div');d.className='choice';d.textContent=o;
+    d.onclick=()=>{
+      document.querySelectorAll('.choice').forEach(c=>c.style.pointerEvents='none');
+      if(o===q.a){d.classList.add('correct');score+=10;document.getElementById('msg').textContent='✅ '+q.hint;}
+      else{d.classList.add('wrong');document.querySelectorAll('.choice').forEach(c=>{if(c.textContent===q.a)c.classList.add('correct')});document.getElementById('msg').textContent='❌ '+q.hint;}
+      document.getElementById('score').textContent=score;
+      setTimeout(()=>{idx++;render()},2000);
+    };ch.appendChild(d);
+  });
+}
+function end(){document.getElementById('fs').textContent=score+' / '+(qs.length*10);document.getElementById('fm').textContent=score>=70?"Camp comparison expert! 🏆":"Review the camp details and try again! 💪";document.getElementById('overlay').style.display='flex'}
+init();
+</script></body></html>

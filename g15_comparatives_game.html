@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Let's Learn 2 — Comparatives & Superlatives</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#185FA5,#0d3f70);min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#a8d4f5;font-size:.85rem;text-align:center;margin-bottom:12px}.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}.tab-btn{border:1.5px solid rgba(255,255,255,.25);border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.1);color:#fff;transition:all .15s}.tab-btn.active{background:#FFD166;color:#185FA5;border-color:#FFD166}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#a8d4f5;text-transform:uppercase;text-align:center}.rule-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,209,102,.3);border-radius:10px;padding:10px 16px;max-width:640px;width:100%;margin-bottom:12px;font-size:.85rem;line-height:1.7;text-align:center}.rule-box strong{color:#FFD166}.q-card{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:20px 24px;max-width:600px;width:100%;text-align:center;margin-bottom:12px}.q-label{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.q-text{font-size:1.05rem;line-height:1.6;margin-bottom:14px}.q-blank{display:inline-block;min-width:140px;border-bottom:2.5px solid #FFD166;color:#FFD166;font-weight:700;padding:0 6px;margin:0 4px}.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:500px;margin:0 auto}.choice{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.22);border-radius:10px;padding:11px 14px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}.choice:hover{background:rgba(255,255,255,.22)}.choice.correct{background:rgba(45,180,80,.35);border-color:#2db450;color:#4ade80}.choice.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171}.hint{color:#a8d4f5;font-size:.85rem;margin-top:8px;min-height:20px;text-align:center}.msg{min-height:30px;text-align:center;font-size:.9rem;font-weight:700;color:#FFD166;margin:6px 0}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#185FA5}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#0d3f70;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}</style></head><body>
+<h1>📈 Comparatives & Superlatives</h1><p class="sub">Let's Learn 2 — Choose the correct comparative or superlative form!</p>
+<div class="tabs">
+  <button class="tab-btn active" onclick="setMode(this,'all')">All mixed</button>
+  <button class="tab-btn" onclick="setMode(this,'comp')">Comparatives only</button>
+  <button class="tab-btn" onclick="setMode(this,'sup')">Superlatives only</button>
+  <button class="tab-btn" onclick="setMode(this,'irr')">Irregular only</button>
+</div>
+<div class="rule-box"><strong>Comparative</strong> (-er / more) → compares 2 things + THAN &nbsp;|&nbsp; <strong>Superlative</strong> (the -est / the most) → ranks 1 of 3+ things</div>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/20</div><div class="hl">Question</div></div><div><div class="hv" id="streak">0</div><div class="hl">Streak 🔥</div></div></div>
+<div class="q-card"><div class="q-label" id="qLabel">COMPARATIVE or SUPERLATIVE?</div><div class="q-text" id="qText"></div><div class="choices" id="choices"></div><div class="hint" id="hint"></div></div>
+<div class="msg" id="msg"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">Done!</h2><div class="score-big" id="fs"></div><p style="color:#a8d4f5" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const ALL_QS=[
+  {type:"comp",q:"Camp A is ___ than Camp B.",a:"bigger",opts:["bigger","biggest","more big","big"],hint:"Short adj → -er + than"},
+  {type:"comp",q:"The hike is ___ than the swim.",a:"more difficult",opts:["most difficult","more difficult","difficulter","much difficult"],hint:"Long adj → more + adj + than"},
+  {type:"sup",q:"My camp has ___ lake in the region.",a:"the most beautiful",opts:["the most beautiful","more beautiful","beautifulest","most beautiful"],hint:"Long adj → the most + adj"},
+  {type:"sup",q:"Yesterday was ___ day of the summer.",a:"the best",opts:["better","the better","the best","the most good"],hint:"good → the best (irregular superlative)"},
+  {type:"comp",q:"My sleeping bag is ___ than yours.",a:"warmer",opts:["warmest","warmer","more warm","the warmest"],hint:"Short adj → -er + than"},
+  {type:"sup",q:"Sofia is ___ paddler in the group.",a:"the fastest",opts:["faster","the faster","the fastest","most fast"],hint:"Short adj → the + adj + est"},
+  {type:"irr",q:"The food here is ___ than at Camp B.",a:"better",opts:["more good","gooder","best","better"],hint:"good → better (irregular comparative)"},
+  {type:"irr",q:"Tuesday's storm was ___ storm of the summer.",a:"the worst",opts:["the most bad","the worse","the worst","most bad"],hint:"bad → the worst (irregular superlative)"},
+  {type:"comp",q:"The new cabin is ___ than the old one.",a:"more comfortable",opts:["more comfortable","comfortabler","the most comfortable","most comfortable"],hint:"Long adj → more + adj + than"},
+  {type:"sup",q:"Archery is ___ activity among campers.",a:"the most popular",opts:["more popular","the most popular","the popularest","most popular"],hint:"Long adj → the most + adj"},
+  {type:"comp",q:"Camp Sunburst is ___ than Camp Wildwood from the city.",a:"farther",opts:["more far","farthest","the farthest","farther"],hint:"far → farther (irregular comparative)"},
+  {type:"irr",q:"Of all the weeks, this week has been ___.",a:"the best",opts:["better","the better","the best","the most good"],hint:"good → the best (irregular superlative)"},
+  {type:"comp",q:"Today's hike was ___ than yesterday's.",a:"easier",opts:["the easiest","easier","more easy","most easy"],hint:"y → ies + er: easier"},
+  {type:"sup",q:"The climbing wall is ___ structure at camp.",a:"the tallest",opts:["taller","most tall","the most tall","the tallest"],hint:"Short adj → the + adj + est"},
+  {type:"comp",q:"The mosquitoes are ___ than last week.",a:"worse",opts:["more bad","badder","worst","worse"],hint:"bad → worse (irregular comparative)"},
+];
+let qs=[],idx=0,score=0,streak=0,mode="all";
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function setMode(btn,m){mode=m;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");init();}
+function init(){
+  const pool=mode==="all"?ALL_QS:mode==="irr"?ALL_QS.filter(q=>q.type==="irr"):ALL_QS.filter(q=>q.type===mode);
+  qs=shuffle([...pool]);idx=0;score=0;streak=0;document.getElementById("overlay").style.display="none";render();
+}
+function render(){
+  if(idx>=qs.length){end();return}
+  const q=qs[idx];
+  document.getElementById("qn").textContent=(idx+1)+"/"+qs.length;
+  document.getElementById("qLabel").textContent=q.type==="comp"?"COMPARATIVE":"SUPERLATIVE";
+  document.getElementById("qText").innerHTML=q.q.replace("___","<span class="q-blank">___</span>");
+  document.getElementById("hint").textContent="";document.getElementById("msg").textContent="";
+  const ch=document.getElementById("choices");ch.innerHTML="";
+  shuffle([...q.opts]).forEach(o=>{
+    const d=document.createElement("div");d.className="choice";d.textContent=o;
+    d.onclick=()=>{
+      document.querySelectorAll(".choice").forEach(c=>c.style.pointerEvents="none");
+      if(o===q.a){d.classList.add("correct");score+=10;streak++;document.getElementById("hint").textContent="💡 "+q.hint;}
+      else{d.classList.add("wrong");streak=0;document.querySelectorAll(".choice").forEach(c=>{if(c.textContent===q.a)c.classList.add("correct")});document.getElementById("hint").textContent="💡 "+q.hint;}
+      document.getElementById("score").textContent=score;document.getElementById("streak").textContent=streak;
+      setTimeout(()=>{idx++;render()},1500);
+    };ch.appendChild(d);
+  });
+}
+function end(){document.getElementById("fs").textContent=score+" / "+(qs.length*10);document.getElementById("fm").textContent=score>=qs.length*8?"Grammar champion! 🏆":"Keep practising! 💪";document.getElementById("overlay").style.display="flex"}
+init();
+</script></body></html>

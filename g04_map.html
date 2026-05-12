@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 4 — Camp Map</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a4a2e,#0d2b1a);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}
+h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}
+.sub{color:#a8e6c0;font-size:.85rem;text-align:center;margin-bottom:12px}
+.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}
+.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}
+.hl{font-size:.65rem;color:#a8e6c0;text-transform:uppercase;text-align:center}
+.layout{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:800px;width:100%}
+.map-area{flex:1;min-width:280px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:14px;padding:14px;position:relative;min-height:400px}
+.map-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FFD166;margin-bottom:10px}
+.spot{position:absolute;width:38px;height:38px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#FFD166;cursor:pointer;transition:all .15s;background:rgba(0,0,0,.4)}
+.spot:hover{border-color:#FFD166;background:rgba(255,209,102,.15);transform:scale(1.1)}
+.spot.answered.correct{background:rgba(45,180,80,.4);border-color:#2db450;color:#4ade80}
+.spot.answered.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171}
+.spot-label{position:absolute;font-size:.62rem;white-space:nowrap;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.word-bank{flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:12px}
+.wb-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FFD166;margin-bottom:10px}
+.word-chip{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 12px;margin-bottom:6px;cursor:pointer;font-size:.85rem;transition:all .15s}
+.word-chip:hover{background:rgba(255,255,255,.22)}
+.word-chip.selected{background:#FFD166;color:#1a4a2e;font-weight:700;border-color:#FFD166}
+.word-chip.used{opacity:.3;pointer-events:none;text-decoration:line-through}
+.msg{min-height:30px;text-align:center;font-size:.9rem;font-weight:700;color:#FFD166;margin:10px 0}
+.btn{border:none;border-radius:10px;padding:9px 20px;font-size:.85rem;font-weight:700;cursor:pointer;background:#FFD166;color:#1a4a2e}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}
+.modal{background:#1a4a2e;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}
+.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}
+</style></head><body>
+<h1>🗺️ Camp Map!</h1>
+<p class="sub">Activity 4 — Click a numbered spot, then click the matching word from the bank!</p>
+<div class="hud">
+  <div><div class="hv" id="score">0</div><div class="hl">Score</div></div>
+  <div><div class="hv" id="placed">0/11</div><div class="hl">Placed</div></div>
+</div>
+<div class="layout">
+  <div class="map-area" id="mapArea"><div class="map-label">🏕️ Camp Highest Summit — click a number!</div></div>
+  <div class="word-bank">
+    <div class="wb-label">Word bank</div>
+    <div id="wordBank"></div>
+  </div>
+</div>
+<div class="msg" id="msg">Click a numbered spot on the map to begin!</div>
+<button class="btn" onclick="init()">Restart</button>
+<div class="overlay" id="overlay"><div class="modal">
+  <h2 style="color:#FFD166">Map complete!</h2>
+  <div class="score-big" id="finalScore"></div>
+  <p style="color:#a8e6c0" id="finalMsg"></p>
+  <button class="btn" style="margin-top:14px" onclick="init()">Play again</button>
+</div></div>
+<script>
+const LOCATIONS=[
+  {n:1,x:45,y:30,answer:"Camper",emoji:"🧒"},
+  {n:2,x:60,y:20,answer:"Counselor",emoji:"👩‍🏫"},
+  {n:3,x:25,y:55,answer:"Lake",emoji:"🏞️"},
+  {n:4,x:70,y:50,answer:"Forest",emoji:"🌲"},
+  {n:5,x:50,y:65,answer:"Mess hall",emoji:"🍽️"},
+  {n:6,x:35,y:40,answer:"Campfire area",emoji:"🔥"},
+  {n:7,x:65,y:35,answer:"Swimming area",emoji:"🏊"},
+  {n:8,x:20,y:70,answer:"Hiking trail",emoji:"🥾"},
+  {n:9,x:80,y:70,answer:"Kitchen",emoji:"🍳"},
+  {n:10,x:40,y:78,answer:"Lifeguard",emoji:"🛟"},
+  {n:11,x:55,y:45,answer:"Nurse",emoji:"🏥"},
+];
+let selected=null,placed=0,score=0,errors=0;
+function init(){
+  selected=null;placed=0;score=0;errors=0;
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('score').textContent=0;
+  document.getElementById('placed').textContent='0/11';
+  // Build map spots
+  const map=document.getElementById('mapArea');
+  map.innerHTML='<div class="map-label">🏕️ Camp Highest Summit — click a number!</div>';
+  LOCATIONS.forEach(loc=>{
+    const spot=document.createElement('div');
+    spot.className='spot';spot.textContent=loc.n;
+    spot.style.left=(loc.x-3)+'%';spot.style.top=(loc.y)+'%';
+    spot.dataset.n=loc.n;
+    spot.onclick=()=>clickSpot(spot,loc);
+    map.appendChild(spot);
+  });
+  // Build word bank
+  const wb=document.getElementById('wordBank');wb.innerHTML='';
+  [...LOCATIONS].sort(()=>Math.random()-.5).forEach(loc=>{
+    const chip=document.createElement('div');
+    chip.className='word-chip';chip.textContent=loc.emoji+' '+loc.answer;chip.dataset.answer=loc.answer;
+    chip.onclick=()=>selectWord(chip,loc.answer);
+    wb.appendChild(chip);
+  });
+  document.getElementById('msg').textContent='Click a numbered spot on the map to begin!';
+}
+function clickSpot(spot,loc){
+  if(spot.classList.contains('answered'))return;
+  document.querySelectorAll('.spot').forEach(s=>s.style.border='2.5px solid rgba(255,255,255,.4)');
+  spot.style.border='2.5px solid #FFD166';
+  selected={spot,loc};
+  document.getElementById('msg').textContent='Spot '+loc.n+' selected — now click the matching word!';
+}
+function selectWord(chip,answer){
+  if(!selected){document.getElementById('msg').textContent='Click a map spot first!';return;}
+  if(chip.classList.contains('used'))return;
+  document.querySelectorAll('.word-chip').forEach(c=>c.classList.remove('selected'));
+  chip.classList.add('selected');
+  if(answer===selected.loc.answer){
+    selected.spot.classList.add('answered','correct');
+    selected.spot.textContent=selected.loc.emoji;
+    chip.classList.remove('selected');chip.classList.add('used');
+    score+=10;placed++;
+    document.getElementById('score').textContent=score;
+    document.getElementById('placed').textContent=placed+'/11';
+    document.getElementById('msg').textContent='✅ Correct! '+answer+' is at spot '+selected.loc.n+'!';
+    selected=null;
+    if(placed>=11)setTimeout(endGame,600);
+  }else{
+    selected.spot.classList.add('answered','wrong');
+    setTimeout(()=>selected&&selected.spot.classList.remove('answered','wrong'),800);
+    score=Math.max(0,score-3);document.getElementById('score').textContent=score;
+    document.getElementById('msg').textContent='❌ Not quite! Try another word.';
+    chip.classList.remove('selected');
+  }
+}
+function endGame(){
+  document.getElementById('finalScore').textContent=score+' / 110';
+  document.getElementById('finalMsg').textContent=score>=80?"Perfect navigation! 🏆":"Keep exploring the camp! 💪";
+  document.getElementById('overlay').style.display='flex';
+}
+init();
+</script></body></html>

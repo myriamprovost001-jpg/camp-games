@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Let's Learn 3 — Modals</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#8B1A1A,#3a0808);min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#f5a0a0;font-size:.85rem;text-align:center;margin-bottom:12px}.ref-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:660px;width:100%;margin-bottom:12px}.ref-card{border-radius:10px;padding:10px;text-align:center}.ref-card h3{font-size:.88rem;font-weight:700;margin-bottom:4px}.ref-card p{font-size:.75rem;opacity:.85}.rc-should{background:rgba(45,138,94,.25);border:1px solid #2d8a5e}.rc-need{background:rgba(255,165,0,.2);border:1px solid #f59e0b}.rc-must{background:rgba(200,50,50,.25);border:1px solid #c83232}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#f5a0a0;text-transform:uppercase;text-align:center}.q-card{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:20px 24px;max-width:600px;width:100%;text-align:center;margin-bottom:12px}.q-label{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.q-text{font-size:1.05rem;line-height:1.6;margin-bottom:14px}.q-blank{display:inline-block;min-width:110px;border-bottom:2.5px solid #FFD166;color:#FFD166;font-weight:700;padding:0 4px;margin:0 4px}.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.choice{border-radius:10px;padding:12px;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;text-align:center}.choice:hover{background:rgba(255,255,255,.2)}.choice.correct{background:rgba(45,180,80,.35);border-color:#2db450;color:#4ade80}.choice.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171}.hint{color:#f5a0a0;font-size:.85rem;margin-top:8px;min-height:20px;text-align:center}.msg{min-height:30px;text-align:center;font-size:.9rem;font-weight:700;color:#FFD166;margin:6px 0}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#3a0808}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#3a0808;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}</style></head><body>
+<h1>⚠️ Modals: Should, Must, Need to</h1><p class="sub">Let's Learn 3 — Choose the correct modal for each camp sentence!</p>
+<div class="ref-strip">
+  <div class="ref-card rc-should"><h3>SHOULD</h3><p>Advice — good idea<br>You can say no</p></div>
+  <div class="ref-card rc-need"><h3>NEED TO</h3><p>Necessity — required<br>It won't work without it</p></div>
+  <div class="ref-card rc-must"><h3>MUST</h3><p>Obligation — a rule<br>No exceptions!</p></div>
+</div>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/15</div><div class="hl">Question</div></div><div><div class="hv" id="streak">0</div><div class="hl">Streak 🔥</div></div></div>
+<div class="q-card"><div class="q-label" id="qLabel">CHOOSE THE CORRECT MODAL</div><div class="q-text" id="qText"></div><div class="choices" id="choices"></div><div class="hint" id="hint"></div></div>
+<div class="msg" id="msg"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">Done!</h2><div class="score-big" id="fs"></div><p style="color:#f5a0a0" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const QS=[
+  {q:"You ___ wear a life jacket on the water. No exceptions.",a:"must",opts:["should","must","need to","could"],label:"OBLIGATION",hint:"Non-negotiable safety rule → MUST + base verb"},
+  {q:"You ___ bring sunscreen — it gets very hot at camp!",a:"should",opts:["must","should","need to","shall"],label:"ADVICE",hint:"Good idea, but your choice → SHOULD + base verb"},
+  {q:"Campers ___ sign in before breakfast every morning.",a:"need to",opts:["should","need to","must to","needs to"],label:"NECESSITY",hint:"Required for the system to work → NEED TO + base verb"},
+  {q:"You ___ leave the camp alone. It is forbidden.",a:"must not",opts:["shouldn't","don't need to","must not","needn't"],label:"PROHIBITION",hint:"Completely forbidden → MUST NOT + base verb"},
+  {q:"You ___ bring a tent — the camp has them already.",a:"don't need to",opts:["mustn't","shouldn't","don't need to","must not"],label:"NOT NECESSARY",hint:"Optional — you can if you want, but it's not required"},
+  {q:"Campers ___ wear helmets during climbing activities.",a:"must",opts:["should","must","need","could"],label:"OBLIGATION",hint:"Safety rule, no exceptions → MUST + base verb"},
+  {q:"You ___ try the giant water slide — it's amazing!",a:"should",opts:["must","need to","should","shall"],label:"ADVICE",hint:"Recommendation — your choice → SHOULD + base verb"},
+  {q:"We ___ pack food for the picnic tomorrow.",a:"need to",opts:["should","needs to","need to","must to"],label:"NECESSITY",hint:"Required for the picnic to work → NEED TO + base verb"},
+  {q:"You ___ try to make new friends at camp.",a:"should",opts:["must","need to","should","shall"],label:"ADVICE",hint:"Good idea, encouragement → SHOULD + base verb"},
+  {q:"Campers ___ stay inside during a lightning storm.",a:"must",opts:["need to","should","must","could"],label:"OBLIGATION",hint:"Safety emergency, no choice → MUST + base verb"},
+  {q:"After SHOULD, the verb is always in the ___ form.",a:"base",opts:["base","-ing","-ed","-s"],label:"GRAMMAR RULE",hint:"Should/must/need to → always base form. No -s, no -ing, no -ed!"},
+  {q:"'You ___ wear sunscreen' means it's a good idea but not a rule.",a:"should",opts:["must","need to","should","must not"],label:"MEANING",hint:"SHOULD = advice. You can ignore it, but it's a good idea."},
+  {q:"She ___ forget her rain poncho — the forecast says rain!",a:"shouldn't",opts:["mustn't","doesn't need to","shouldn't","can't"],label:"NEGATIVE ADVICE",hint:"Bad idea, but not forbidden → SHOULDN'T + base verb"},
+  {q:"What's the difference? 'You ___ bring a sleeping bag' = forbidden!",a:"must not",opts:["don't need to","shouldn't","must not","needn't"],label:"MUST NOT vs DON'T NEED TO",hint:"MUST NOT = forbidden. DON'T NEED TO = not necessary (but allowed)."},
+  {q:"He ___ pack his rain jacket — it's required for the hike.",a:"needs to",opts:["need to","needs to","must to","should to"],label:"3RD PERSON",hint:"He/she/it + need to → NEEDS TO (only NEED changes, not the main verb!)"},
+];
+let qs=[],idx=0,score=0,streak=0;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){qs=shuffle([...QS]);idx=0;score=0;streak=0;document.getElementById('overlay').style.display='none';render()}
+function render(){
+  if(idx>=qs.length){end();return}
+  const q=qs[idx];
+  document.getElementById('qn').textContent=(idx+1)+'/'+qs.length;
+  document.getElementById('qLabel').textContent=q.label;
+  document.getElementById('qText').innerHTML=q.q.replace('___','<span class="q-blank">___</span>');
+  document.getElementById('hint').textContent='';document.getElementById('msg').textContent='';
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  shuffle([...q.opts]).forEach(o=>{
+    const d=document.createElement('div');d.className='choice';d.textContent=o;
+    d.onclick=()=>{
+      document.querySelectorAll('.choice').forEach(c=>c.style.pointerEvents='none');
+      if(o===q.a){d.classList.add('correct');score+=10;streak++;document.getElementById('hint').textContent='💡 '+q.hint;}
+      else{d.classList.add('wrong');streak=0;document.querySelectorAll('.choice').forEach(c=>{if(c.textContent===q.a)c.classList.add('correct')});document.getElementById('hint').textContent='💡 '+q.hint;}
+      document.getElementById('score').textContent=score;document.getElementById('streak').textContent=streak;
+      setTimeout(()=>{idx++;render()},1600);
+    };ch.appendChild(d);
+  });
+}
+function end(){document.getElementById('fs').textContent=score+' / '+(qs.length*10);document.getElementById('fm').textContent=score>=120?"Modal master! 🏆":"Keep practising with should, must, and need to! 💪";document.getElementById('overlay').style.display='flex'}
+init();
+</script></body></html>

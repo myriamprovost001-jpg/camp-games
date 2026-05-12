@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 14 — Camp Meal Planner</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0F6E56,#05302a);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#a8e6c0;font-size:.85rem;text-align:center;margin-bottom:14px}.layout{display:flex;gap:12px;max-width:820px;width:100%;flex-wrap:wrap}.left{flex:1;min-width:260px}.right{flex:1;min-width:260px}.panel{background:rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:10px}.panel-title{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}.meal-type{display:flex;gap:8px;margin-bottom:12px}.mt-btn{flex:1;border:2px solid rgba(255,255,255,.25);border-radius:8px;padding:8px;font-size:.85rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.1);color:#fff;transition:all .15s}.mt-btn.active{background:#FFD166;color:#0F6E56;border-color:#FFD166}.food-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.food-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:5px 10px;font-size:.8rem;cursor:pointer;transition:all .15s;user-select:none}.food-chip:hover{background:rgba(255,255,255,.2)}.food-chip.sel{background:rgba(255,209,102,.2);border-color:#FFD166;color:#FFD166;font-weight:700}.slot-grid{display:grid;gap:8px}.slot{background:rgba(0,0,0,.2);border:1.5px dashed rgba(255,255,255,.2);border-radius:8px;padding:10px 12px}.slot.filled{border-style:solid;border-color:rgba(45,180,80,.4);background:rgba(45,180,80,.08)}.slot-label{font-size:.72rem;color:#a8e6c0;font-weight:700;text-transform:uppercase;margin-bottom:4px}.slot-value{font-size:.88rem;color:#FFD166;min-height:20px}.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0}.btn{border:none;border-radius:10px;padding:9px 18px;font-size:.85rem;font-weight:700;cursor:pointer;transition:transform .1s}.btn:hover{transform:scale(1.04)}.btn-build{background:#FFD166;color:#0F6E56}.btn-clear{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}.desc-area{background:rgba(255,255,255,.06);border-radius:10px;padding:12px}.desc-title{color:#FFD166;font-size:.78rem;font-weight:700;margin-bottom:8px}.desc-template{color:#a8e6c0;font-size:.85rem;margin-bottom:8px;line-height:1.6}.desc-input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px;color:#fff;font-size:.85rem;resize:none;outline:none;font-family:inherit;margin-bottom:6px}.desc-input:focus{border-color:#FFD166}</style></head><body>
+<h1>🍽️ Camp Meal Planner</h1><p class="sub">Activity 14 — Plan a camp meal for 6 campers!</p>
+<div class="layout">
+  <div class="left">
+    <div class="panel"><div class="panel-title">Choose meal type</div>
+      <div class="meal-type">
+        <button class="mt-btn active" onclick="setMeal(this,'Breakfast')">🌅 Breakfast</button>
+        <button class="mt-btn" onclick="setMeal(this,'Lunch')">☀️ Lunch</button>
+        <button class="mt-btn" onclick="setMeal(this,'Dinner')">🌙 Dinner</button>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-title">Pick your food (click to select)</div>
+      <div style="color:#a8e6c0;font-size:.78rem;margin-bottom:6px">Main dish:</div>
+      <div class="food-grid" id="mainFoods"></div>
+      <div style="color:#a8e6c0;font-size:.78rem;margin:8px 0 4px">Side dish / Salad:</div>
+      <div class="food-grid" id="sideFoods"></div>
+      <div style="color:#a8e6c0;font-size:.78rem;margin:8px 0 4px">Drink:</div>
+      <div class="food-grid" id="drinkFoods"></div>
+      <div style="color:#a8e6c0;font-size:.78rem;margin:8px 0 4px">Dessert:</div>
+      <div class="food-grid" id="dessertFoods"></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="panel"><div class="panel-title">Your meal plan</div>
+      <div class="slot-grid">
+        <div class="slot" id="slotMeal"><div class="slot-label">Meal</div><div class="slot-value" id="svMeal">—</div></div>
+        <div class="slot" id="slotMain"><div class="slot-label">Main dish</div><div class="slot-value" id="svMain">—</div></div>
+        <div class="slot" id="slotSide"><div class="slot-label">Side dish</div><div class="slot-value" id="svSide">—</div></div>
+        <div class="slot" id="slotDrink"><div class="slot-label">Drink</div><div class="slot-value" id="svDrink">—</div></div>
+        <div class="slot" id="slotDessert"><div class="slot-label">Dessert</div><div class="slot-value" id="svDessert">—</div></div>
+      </div>
+      <div class="btn-row"><button class="btn btn-build" onclick="buildPlan()">Build my plan!</button><button class="btn btn-clear" onclick="clearAll()">Clear</button></div>
+    </div>
+    <div class="desc-area">
+      <div class="desc-title">✍️ Describe your meal:</div>
+      <div class="desc-template">For <strong style="color:#FFD166">_______</strong>, we will have <strong style="color:#FFD166">_______</strong> because <strong style="color:#FFD166">_______</strong></div>
+      <textarea class="desc-input" rows="3" placeholder="For lunch, we will have sandwiches because they are easy to make outdoors and everyone likes them."></textarea>
+      <div class="desc-template" style="margin-top:6px">Would you eat your partner's meal? Why?</div>
+      <textarea class="desc-input" rows="2" placeholder="I think your meal is... because..."></textarea>
+    </div>
+  </div>
+</div>
+<script>
+const FOODS={
+  main:["🥪 Sandwich","🌭 Hot dog","🍔 Burger","🥗 Pasta salad","🍳 Eggs","🥞 Pancakes","🍜 Soup","🌮 Wrap"],
+  side:["🥗 Salad","🍎 Fruit","🥕 Veggies","🍟 Chips","🍞 Bread","🥒 Cucumber salad","🌽 Corn"],
+  drink:["💧 Water","🍋 Lemonade","🧃 Juice","🥛 Milk","☕ Hot chocolate"],
+  dessert:["🍪 Cookies","🍫 Chocolate","🍓 Fruit salad","🔥 S'mores","🍦 Ice cream","🍌 Banana"],
+};
+let meal="Breakfast",sel={main:null,side:null,drink:null,dessert:null};
+function setMeal(btn,m){meal=m;document.querySelectorAll('.mt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function buildChips(id,cat){
+  const el=document.getElementById(id);el.innerHTML='';
+  FOODS[cat].forEach(food=>{
+    const c=document.createElement('div');c.className='food-chip'+(sel[cat]===food?' sel':'');
+    c.textContent=food;c.onclick=()=>{sel[cat]=sel[cat]===food?null:food;buildChips(id,cat);};
+    el.appendChild(c);
+  });
+}
+function buildPlan(){
+  document.getElementById('svMeal').textContent=meal;document.getElementById('slotMeal').classList.add('filled');
+  ['main','side','drink','dessert'].forEach(cat=>{
+    const id='sv'+cat.charAt(0).toUpperCase()+cat.slice(1);
+    const slotId='slot'+cat.charAt(0).toUpperCase()+cat.slice(1);
+    if(sel[cat]){document.getElementById(id).textContent=sel[cat];document.getElementById(slotId).classList.add('filled');}
+  });
+}
+function clearAll(){sel={main:null,side:null,drink:null,dessert:null};['Main','Side','Drink','Dessert','Meal'].forEach(s=>{document.getElementById('sv'+s).textContent='—';document.getElementById('slot'+s).classList.remove('filled');});['main','side','drink','dessert'].forEach((c,i)=>buildChips(['mainFoods','sideFoods','drinkFoods','dessertFoods'][i],c));}
+['main','side','drink','dessert'].forEach((c,i)=>buildChips(['mainFoods','sideFoods','drinkFoods','dessertFoods'][i],c));
+</script></body></html>

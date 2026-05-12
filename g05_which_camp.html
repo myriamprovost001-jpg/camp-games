@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 5&6 — Which Camp?</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#854F0B,#3a2000);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#f5d5a0;font-size:.85rem;text-align:center;margin-bottom:12px}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#f5d5a0;text-transform:uppercase;text-align:center}.question-box{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 22px;max-width:660px;width:100%;margin-bottom:14px;text-align:center}.q-label{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.q-text{font-size:1.05rem;line-height:1.55}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:660px;width:100%;margin-bottom:12px}.choice{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .15s;font-size:.88rem;font-weight:600}.choice:hover{background:rgba(255,255,255,.2)}.choice.correct{background:rgba(45,180,80,.35);border-color:#2db450;color:#4ade80}.choice.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171}.msg{min-height:30px;text-align:center;font-size:.9rem;font-weight:700;color:#FFD166;margin-bottom:10px}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#854F0B;transition:transform .1s}.btn:hover{transform:scale(1.04)}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#3a2000;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}</style></head><body>
+<h1>🏕️ Which Camp?</h1><p class="sub">Activities 5 & 6 — Match each activity or item to the right camp type!</p>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/15</div><div class="hl">Question</div></div></div>
+<div class="question-box"><div class="q-label">WHICH CAMP TYPE?</div><div class="q-text" id="qtext"></div></div>
+<div class="choices" id="choices"></div>
+<div class="msg" id="msg"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">Done!</h2><div class="score-big" id="fs"></div><p style="color:#f5d5a0" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const QS=[
+  {q:"Rock climbing and kayaking every day.",a:"Adventure Camp",opts:["Adventure Camp","Arts Camp","Science Camp"]},
+  {q:"Painting, drama, and music workshops.",a:"Arts Camp",opts:["Sports Camp","Arts Camp","Language Camp"]},
+  {q:"Soccer, swimming, and team competitions.",a:"Sports Camp",opts:["Sports Camp","Adventure Camp","Horseback Camp"]},
+  {q:"Coding, experiments, and STEM projects.",a:"Science Camp",opts:["Science Camp","Arts Camp","Sports Camp"]},
+  {q:"Learning French, Spanish, and conversation.",a:"Language Camp",opts:["Language Camp","Adventure Camp","Science Camp"]},
+  {q:"Caring for animals and riding horses.",a:"Horseback Camp",opts:["Horseback Camp","Sports Camp","Arts Camp"]},
+  {q:"Survival skills, map reading, and building shelters.",a:"Adventure Camp",opts:["Arts Camp","Adventure Camp","Language Camp"]},
+  {q:"Drawing, sculpting, and photography.",a:"Arts Camp",opts:["Arts Camp","Science Camp","Horseback Camp"]},
+  {q:"Basketball tournaments and relay races.",a:"Sports Camp",opts:["Language Camp","Sports Camp","Adventure Camp"]},
+  {q:"Building robots and learning about space.",a:"Science Camp",opts:["Science Camp","Arts Camp","Language Camp"]},
+  {q:"No phones allowed — deep forest location.",a:"Adventure Camp",opts:["Science Camp","Sports Camp","Adventure Camp"]},
+  {q:"Theme days every day — drama and costumes.",a:"Arts Camp",opts:["Arts Camp","Language Camp","Horseback Camp"]},
+  {q:"Practicing conversation with native speakers.",a:"Language Camp",opts:["Language Camp","Science Camp","Sports Camp"]},
+  {q:"Stables, feeding animals, trail rides.",a:"Horseback Camp",opts:["Horseback Camp","Adventure Camp","Arts Camp"]},
+  {q:"Tents, outdoor cooking, and wilderness challenges.",a:"Adventure Camp",opts:["Sports Camp","Arts Camp","Adventure Camp"]},
+];
+let qs=[],idx=0,score=0;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){qs=shuffle([...QS]);idx=0;score=0;document.getElementById('overlay').style.display='none';render()}
+function render(){
+  if(idx>=qs.length){end();return}
+  const q=qs[idx];
+  document.getElementById('qn').textContent=(idx+1)+'/'+qs.length;
+  document.getElementById('qtext').textContent=q.q;
+  document.getElementById('msg').textContent='';
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  shuffle([...q.opts]).forEach(o=>{
+    const d=document.createElement('div');d.className='choice';d.textContent=o;
+    d.onclick=()=>{
+      document.querySelectorAll('.choice').forEach(c=>c.style.pointerEvents='none');
+      if(o===q.a){d.classList.add('correct');score+=10;document.getElementById('msg').textContent='✅ Correct! +10'}
+      else{d.classList.add('wrong');document.querySelectorAll('.choice').forEach(c=>{if(c.textContent===q.a)c.classList.add('correct')});document.getElementById('msg').textContent='❌ It was: '+q.a}
+      document.getElementById('score').textContent=score;
+      setTimeout(()=>{idx++;render()},1400);
+    };
+    ch.appendChild(d);
+  });
+}
+function end(){document.getElementById('fs').textContent=score+' / '+(QS.length*10);document.getElementById('fm').textContent=score>=120?"Camp expert! 🏆":"Keep practising! 💪";document.getElementById('overlay').style.display='flex'}
+init();
+</script></body></html>

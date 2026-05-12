@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Let's Learn 1 — There is / There are</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a4a2e,#0d2b1a);min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#a8e6c0;font-size:.85rem;text-align:center;margin-bottom:14px}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:14px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#a8e6c0;text-transform:uppercase;text-align:center}.rule-box{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,209,102,.3);border-radius:12px;padding:12px 18px;max-width:600px;width:100%;margin-bottom:14px;text-align:center}.rule-box p{font-size:.9rem;line-height:1.7}.rule-box strong{color:#FFD166}.q-card{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:20px 24px;max-width:600px;width:100%;margin-bottom:14px;text-align:center}.q-text{font-size:1.1rem;margin-bottom:16px;line-height:1.6}.q-blank{display:inline-block;min-width:120px;border-bottom:2.5px solid #FFD166;color:#FFD166;font-weight:700;margin:0 4px;padding:0 6px}.choices{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.choice{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);border-radius:10px;padding:12px 24px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .15s}.choice:hover{background:rgba(255,255,255,.22)}.choice.correct{background:rgba(45,180,80,.35);border-color:#2db450;color:#4ade80}.choice.wrong{background:rgba(200,50,50,.3);border-color:#c83232;color:#f87171}.hint{color:#a8e6c0;font-size:.85rem;margin-top:10px;min-height:20px}.msg{min-height:30px;text-align:center;font-size:.95rem;font-weight:700;color:#FFD166;margin:8px 0}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#1a4a2e;transition:transform .1s}.btn:hover{transform:scale(1.04)}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#1a4a2e;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}</style></head><body>
+<h1>🏕️ There is / There are</h1><p class="sub">Let's Learn 1 — Choose the correct form for each sentence!</p>
+<div class="rule-box"><p><strong>THERE IS</strong> → singular (1 thing) &nbsp;|&nbsp; <strong>THERE ARE</strong> → plural (2+ things)<br>Look at the noun AFTER the verb to decide!</p></div>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/20</div><div class="hl">Question</div></div><div><div class="hv" id="streak">0</div><div class="hl">Streak</div></div></div>
+<div class="q-card"><div class="q-text" id="qtext"></div><div class="choices" id="choices"></div><div class="hint" id="hint"></div></div>
+<div class="msg" id="msg"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">Finished!</h2><div class="score-big" id="fs"></div><p style="color:#a8e6c0" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const QS=[
+  {q:"___ a big lake near the camp.",a:"There is",hint:"Lake = 1 thing → singular"},
+  {q:"___ ten campers in my cabin.",a:"There are",hint:"Ten campers = many → plural"},
+  {q:"___ a spider in my sleeping bag!",a:"There is",hint:"A spider = 1 thing → singular"},
+  {q:"___ four canoes at the dock.",a:"There are",hint:"Four canoes = many → plural"},
+  {q:"___ a campfire every Friday night.",a:"There is",hint:"A campfire = 1 thing → singular"},
+  {q:"___ mosquitoes everywhere this evening.",a:"There are",hint:"Mosquitoes = many → plural"},
+  {q:"___ one flashlight left.",a:"There is",hint:"One flashlight = 1 thing → singular"},
+  {q:"___ many stars in the sky tonight.",a:"There are",hint:"Many stars = many → plural"},
+  {q:"___ a large lake beside the cabins.",a:"There is",hint:"A large lake = 1 thing → singular"},
+  {q:"___ three colourful kayaks near the dock.",a:"There are",hint:"Three kayaks = many → plural"},
+  {q:"___ long wooden tables in the mess hall.",a:"There are",hint:"Tables = many → plural"},
+  {q:"___ a big fireplace in the corner.",a:"There is",hint:"A fireplace = 1 thing → singular"},
+  {q:"___ a hiking trail through the forest.",a:"There is",hint:"A trail = 1 thing → singular"},
+  {q:"___ many tall pine trees around the camp.",a:"There are",hint:"Many trees = many → plural"},
+  {q:"___ a small snack stand near the trail.",a:"There is",hint:"A snack stand = 1 thing → singular"},
+  {q:"___ two counselors in the mess hall.",a:"There are",hint:"Two counselors = many → plural"},
+  {q:"___ an owl in the tree.",a:"There is",hint:"An owl = 1 thing → singular"},
+  {q:"___ many activities at camp.",a:"There are",hint:"Many activities = many → plural"},
+  {q:"___ one lifeguard at the pool.",a:"There is",hint:"One lifeguard = 1 thing → singular"},
+  {q:"___ bunk beds in every cabin.",a:"There are",hint:"Bunk beds = many → plural"},
+];
+let qs=[],idx=0,score=0,streak=0;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){qs=shuffle([...QS]);idx=0;score=0;streak=0;document.getElementById('overlay').style.display='none';render()}
+function render(){
+  if(idx>=qs.length){end();return}
+  const q=qs[idx];
+  document.getElementById('qn').textContent=(idx+1)+'/'+qs.length;
+  document.getElementById('qtext').innerHTML=q.q.replace('___','<span class="q-blank">___</span>');
+  document.getElementById('hint').textContent='';
+  document.getElementById('msg').textContent='';
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['There is','There are'].sort(()=>Math.random()-.5).forEach(o=>{
+    const d=document.createElement('div');d.className='choice';d.textContent=o;
+    d.onclick=()=>{
+      document.querySelectorAll('.choice').forEach(c=>c.style.pointerEvents='none');
+      if(o===q.a){d.classList.add('correct');score+=10;streak++;document.getElementById('hint').textContent='💡 '+q.hint;}
+      else{d.classList.add('wrong');streak=0;document.querySelectorAll('.choice').forEach(c=>{if(c.textContent===q.a)c.classList.add('correct')});document.getElementById('hint').textContent='💡 '+q.hint;}
+      document.getElementById('score').textContent=score;document.getElementById('streak').textContent=streak;
+      setTimeout(()=>{idx++;render()},1500);
+    };ch.appendChild(d);
+  });
+}
+function end(){document.getElementById('fs').textContent=score+' / '+(qs.length*10);document.getElementById('fm').textContent=score>=160?"Grammar star! 🏆":"Keep practising! 💪";document.getElementById('overlay').style.display='flex'}
+init();
+</script></body></html>

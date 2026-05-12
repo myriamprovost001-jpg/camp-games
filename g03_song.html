@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 3 — Sing It! Highlight Hunt</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#2D1B69,#534AB7);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}
+h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}
+.sub{color:#c5bff5;font-size:.85rem;text-align:center;margin-bottom:12px}
+.mode-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+.mode-btn{border:2px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 18px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.1);color:#fff}
+.mode-btn.active{background:#FFD166;color:#2D1B69;border-color:#FFD166}
+.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}
+.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}
+.hl{font-size:.65rem;color:#c5bff5;text-transform:uppercase;text-align:center}
+.lyrics{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:18px 22px;max-width:660px;width:100%;max-height:420px;overflow-y:auto;margin-bottom:12px;line-height:2.2}
+.lyrics p{margin-bottom:4px}
+.word-span{cursor:pointer;border-radius:4px;padding:1px 3px;transition:all .15s;display:inline}
+.word-span:hover{background:rgba(255,255,255,.2)}
+.word-span.obj{background:rgba(96,165,250,.5);color:#bfdbfe}
+.word-span.place{background:rgba(74,222,128,.35);color:#bbf7d0}
+.word-span.act{background:rgba(250,204,21,.4);color:#fef08a}
+.word-span.wrong{background:rgba(248,113,113,.35);color:#fca5a5;animation:shake .3s}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.leg{border-radius:6px;padding:5px 14px;font-size:.82rem;font-weight:700}
+.leg.obj{background:rgba(96,165,250,.4);color:#bfdbfe}
+.leg.place{background:rgba(74,222,128,.3);color:#bbf7d0}
+.leg.act{background:rgba(250,204,21,.35);color:#fef08a}
+.msg{min-height:30px;text-align:center;font-size:.92rem;font-weight:700;color:#FFD166;margin-bottom:8px}
+.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#2D1B69;transition:transform .1s}
+.btn:hover{transform:scale(1.04)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+</style></head><body>
+<h1>🎵 Sing It! — Highlight Hunt</h1>
+<p class="sub">Activity 3 — Select a mode, then click words in the lyrics to categorize them!</p>
+<div class="mode-row">
+  <button class="mode-btn active" id="mb-obj" onclick="setMode('obj')">🔵 Objects</button>
+  <button class="mode-btn" id="mb-place" onclick="setMode('place')">🟢 Places</button>
+  <button class="mode-btn" id="mb-act" onclick="setMode('act')">🟡 Activities</button>
+</div>
+<div class="legend">
+  <span class="leg obj">Blue = Objects</span>
+  <span class="leg place">Green = Places</span>
+  <span class="leg act">Yellow = Activities</span>
+</div>
+<div class="hud">
+  <div><div class="hv" id="score">0</div><div class="hl">Score</div></div>
+  <div><div class="hv" id="found">0</div><div class="hl">Found</div></div>
+  <div><div class="hv" id="total">0</div><div class="hl">Total</div></div>
+</div>
+<div class="msg" id="msg">Click a mode above, then click words in the lyrics!</div>
+<div class="lyrics" id="lyrics"></div>
+<button class="btn" onclick="reveal()">Show all answers</button>
+<script>
+const LYRICS=`Suitcase open on my bed
+Flashlight Sunscreen Baseball cap
+Sleeping bag and spider-proof tent
+I am ready I am not looking back
+Cabin map in a wrinkled hand
+Name tag crooked on my shirt
+Counselor waving from the porch
+Morning hike on a rocky trail
+Water bottle swinging from my wrist
+Bug spray stinging on my skin
+Compass pointing where the river twists
+Whistle blows on the open field
+Teamwork shouting through the air
+We build a shelter in the woods
+Mess hall buzzing Metal trays
+Salad Sandwich Lemonade
+Thunderstorm drill in the rain
+Poncho flapping as we race
+Souvenir bracelet on my wrist
+Journal pages filled with lists
+Cabin Counselor Mountain view
+This is our epic summer camp
+Backpack Bunk bed Late-night snack
+Canoe on the lake Life jacket strapped
+We paddle out
+Campfire stories in the dark
+Marshmallows melting Shooting stars`;
+
+const OBJECTS=new Set(["Suitcase","Flashlight","Sunscreen","cap","bag","tent","map","tag","Flashlight","Bottle","bottle","Water","Bug","spray","Compass","Whistle","trays","Salad","Sandwich","Lemonade","Poncho","bracelet","Journal","pages","Backpack","bed","snack","Canoe","jacket","Marshmallows","stars","Compass"]);
+const PLACES=new Set(["porch","trail","field","woods","Mess","hall","cabin","Cabin","lake","camp"]);
+const ACTIVITIES=new Set(["hike","build","paddle","race","flapping","blows","melting"]);
+
+const ANSWERS={};
+// Mark answers
+"Suitcase,Flashlight,Sunscreen,Sleeping,Backpack,Canoe,Compass,Journal,Marshmallows,Poncho,Sandwich,Lemonade,Whistle".split(",").forEach(w=>ANSWERS[w]="obj");
+"trail,field,woods,lake,camp,porch,cabin,Cabin".split(",").forEach(w=>ANSWERS[w]="place");
+"hike,build,paddle,race,melting".split(",").forEach(w=>ANSWERS[w]="act");
+
+let mode="obj",score=0,found=0;
+const total=Object.keys(ANSWERS).length;
+document.getElementById('total').textContent=total;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mb-'+m).classList.add('active');
+  const modeNames={obj:"Objects (blue)",place:"Places (green)",act:"Activities (yellow)"};
+  document.getElementById('msg').textContent="Mode: "+modeNames[m]+" — click matching words!";
+}
+
+function buildLyrics(){
+  const el=document.getElementById('lyrics');el.innerHTML='';
+  LYRICS.split('\n').forEach(line=>{
+    const p=document.createElement('p');
+    line.split(' ').forEach((w,i)=>{
+      if(i>0)p.appendChild(document.createTextNode(' '));
+      const span=document.createElement('span');
+      span.className='word-span';span.textContent=w;span.dataset.word=w;
+      span.onclick=()=>clickWord(span,w);
+      p.appendChild(span);
+    });
+    el.appendChild(p);
+  });
+}
+
+function clickWord(span,word){
+  const clean=word.replace(/[^a-zA-Z]/g,'');
+  const correctCat=ANSWERS[clean]||ANSWERS[word];
+  if(span.classList.contains('obj')||span.classList.contains('place')||span.classList.contains('act')){
+    document.getElementById('msg').textContent='Already highlighted!';return;
+  }
+  if(correctCat===mode){
+    span.classList.add(mode);score+=10;found++;
+    document.getElementById('score').textContent=score;
+    document.getElementById('found').textContent=found;
+    document.getElementById('msg').textContent='✅ Correct! '+clean+' is a '+{obj:'object',place:'place',act:'activity'}[mode]+'!';
+    if(found>=total)document.getElementById('msg').textContent='🏆 All found! Score: '+score;
+  }else if(correctCat){
+    span.classList.add('wrong');
+    document.getElementById('msg').textContent='❌ Not a '+{obj:'object',place:'place',act:'activity'}[mode]+'! Change mode and try.';
+    score=Math.max(0,score-3);document.getElementById('score').textContent=score;
+    setTimeout(()=>span.classList.remove('wrong'),600);
+  }else{
+    document.getElementById('msg').textContent='"'+clean+'" is not a vocabulary target here.';
+  }
+}
+
+function reveal(){
+  document.querySelectorAll('.word-span').forEach(span=>{
+    const clean=span.dataset.word.replace(/[^a-zA-Z]/g,'');
+    const cat=ANSWERS[clean]||ANSWERS[span.dataset.word];
+    if(cat)span.classList.add(cat);
+  });
+  document.getElementById('msg').textContent='All answers revealed!';
+}
+
+buildLyrics();
+</script></body></html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 7 — Can You? Spinner</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0F6E56,#083d2f);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#a8e6c0;font-size:.85rem;text-align:center;margin-bottom:16px}.wheel-wrap{position:relative;width:280px;height:280px;margin-bottom:16px}.wheel{width:100%;height:100%;border-radius:50%;border:4px solid #FFD166;background:conic-gradient(#185FA5 0% 6.25%,#534AB7 6.25% 12.5%,#0F6E56 12.5% 18.75%,#8B1A1A 18.75% 25%,#854F0B 25% 31.25%,#185FA5 31.25% 37.5%,#534AB7 37.5% 43.75%,#0F6E56 43.75% 50%,#8B1A1A 50% 56.25%,#854F0B 56.25% 62.5%,#185FA5 62.5% 68.75%,#534AB7 68.75% 75%,#0F6E56 75% 81.25%,#8B1A1A 81.25% 87.5%,#854F0B 87.5% 93.75%,#185FA5 93.75% 100%);transition:transform 3s cubic-bezier(.17,.67,.35,1);display:flex;align-items:center;justify-content:center}.pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.8rem;z-index:10}.center-label{position:absolute;width:80px;height:80px;border-radius:50%;background:#1a4a2e;border:3px solid #FFD166;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#FFD166;text-align:center;line-height:1.2}.result-box{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 24px;text-align:center;max-width:500px;width:100%;margin-bottom:14px;min-height:100px}.result-q{color:#FFD166;font-size:1rem;font-weight:700;margin-bottom:8px}.result-extra{color:#a8e6c0;font-size:.85rem;line-height:1.5}.answer-row{display:flex;gap:10px;justify-content:center;margin-bottom:12px}.ans-btn{border:none;border-radius:10px;padding:12px 24px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .15s}.btn-yes{background:#2db450;color:#fff}.btn-no{background:#c83232;color:#fff}.btn-yes:hover{background:#25993f}.btn-no:hover{background:#a82828}.spin-btn{border:none;border-radius:12px;padding:13px 30px;font-size:1rem;font-weight:700;cursor:pointer;background:#FFD166;color:#083d2f;transition:transform .1s;margin-bottom:10px}.spin-btn:hover{transform:scale(1.04)}.tracker{max-width:500px;width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;max-height:220px;overflow-y:auto}.tracker-item{background:rgba(255,255,255,.08);border-radius:8px;padding:6px 10px;font-size:.8rem}.tracker-item.found{background:rgba(45,180,80,.2);border:1px solid #2db450}.tracker-item .skill{font-weight:700;color:#FFD166}.tracker-item .name{color:#a8e6c0;font-size:.75rem}</style></head><body>
+<h1>🎯 Can You? Spinner</h1><p class="sub">Activity 7 — Spin to get a skill, then find a classmate who can do it!</p>
+<div class="wheel-wrap"><div class="pointer">▼</div><div class="wheel" id="wheel"><div class="center-label">SPIN!</div></div></div>
+<button class="spin-btn" onclick="spin()">🎰 Spin the wheel!</button>
+<div class="result-box"><div class="result-q" id="resultQ">Spin the wheel to get a skill!</div><div class="result-extra" id="resultExtra">Ask a classmate: "Can you ___?"</div></div>
+<div class="answer-row">
+  <button class="ans-btn btn-yes" onclick="markFound()">✅ Found someone!</button>
+  <button class="ans-btn btn-no" onclick="noOne()">❌ No one can</button>
+</div>
+<div class="tracker" id="tracker"></div>
+<script>
+const SKILLS=[
+  {skill:"swim",q:"Can you swim?",extra:"Ask: Where do you swim? Are you good?"},
+  {skill:"cook",q:"Can you cook?",extra:"Ask: What can you cook? How often?"},
+  {skill:"sing",q:"Can you sing?",extra:"Ask: What kind of music? Since when?"},
+  {skill:"hike",q:"Can you hike?",extra:"Ask: Where? How far? Are you good?"},
+  {skill:"play a sport",q:"Can you play a sport?",extra:"Ask: Which sport? How often?"},
+  {skill:"build a tent",q:"Can you build a tent?",extra:"Ask: Have you done it before?"},
+  {skill:"read a map",q:"Can you read a map?",extra:"Ask: With a compass? GPS only?"},
+  {skill:"paddle a canoe",q:"Can you paddle a canoe?",extra:"Ask: Where? How long ago?"},
+  {skill:"help others",q:"Can you help others?",extra:"Ask: Give an example!"},
+  {skill:"tell a story",q:"Can you tell a story?",extra:"Ask: What kind of story?"},
+  {skill:"take pictures",q:"Can you take pictures?",extra:"Ask: Phone or camera? What subjects?"},
+  {skill:"ride a horse",q:"Can you ride a horse?",extra:"Ask: Since when? Where?"},
+  {skill:"start a campfire",q:"Can you start a campfire?",extra:"Ask: With matches or flint?"},
+  {skill:"speak another language",q:"Can you speak another language?",extra:"Ask: Which one? How well?"},
+  {skill:"play an instrument",q:"Can you play an instrument?",extra:"Ask: Which one? Since when?"},
+  {skill:"use a compass",q:"Can you use a compass?",extra:"Ask: Have you used one outdoors?"},
+];
+let spinning=false,current=null,rotation=0;
+const found={};
+SKILLS.forEach(s=>found[s.skill]={name:'',found:false});
+buildTracker();
+function spin(){
+  if(spinning)return;spinning=true;
+  const idx=Math.floor(Math.random()*SKILLS.length);
+  current=SKILLS[idx];
+  rotation+=1440+Math.random()*360;
+  document.getElementById('wheel').style.transform='rotate('+rotation+'deg)';
+  setTimeout(()=>{
+    spinning=false;
+    document.getElementById('resultQ').textContent='"'+current.q+'"';
+    document.getElementById('resultExtra').textContent=current.extra;
+  },3000);
+}
+function markFound(){
+  if(!current)return;
+  const name=prompt('Who said YES? Enter their name:');
+  if(!name)return;
+  found[current.skill]={name,found:true};
+  buildTracker();
+  document.getElementById('resultExtra').textContent='✅ '+name+' can '+current.skill+'! Great!';
+}
+function noOne(){
+  if(!current)return;
+  document.getElementById('resultExtra').textContent='No one in the class can '+current.skill+' — interesting!';
+}
+function buildTracker(){
+  const el=document.getElementById('tracker');el.innerHTML='';
+  SKILLS.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='tracker-item'+(found[s.skill].found?' found':'');
+    d.innerHTML='<div class="skill">'+s.skill+'</div><div class="name">'+(found[s.skill].found?found[s.skill].name:'—')+'</div>';
+    el.appendChild(d);
+  });
+}
+</script></body></html>

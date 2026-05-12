@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 9 — Camp Match Interview</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#534AB7,#2D1B69);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#c5bff5;font-size:.85rem;text-align:center;margin-bottom:14px}.card-area{max-width:600px;width:100%;position:relative;min-height:320px;margin-bottom:14px}.int-card{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:18px;padding:24px;width:100%;position:relative}.card-cat{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.card-q{font-size:1.15rem;font-weight:700;margin-bottom:12px;line-height:1.5}.card-starter{background:rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;font-size:.88rem;color:#c5bff5;line-height:1.5}.card-starter strong{color:#FFD166}.notes-area{background:rgba(0,0,0,.2);border-radius:10px;padding:10px;margin-top:10px}.notes-label{font-size:.72rem;color:#FFD166;font-weight:700;margin-bottom:6px}.notes-input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px;color:#fff;font-size:.85rem;resize:none;outline:none;font-family:inherit}.notes-input:focus{border-color:#FFD166}.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;transition:transform .1s}.btn:hover{transform:scale(1.04)}.btn-next{background:#FFD166;color:#2D1B69}.btn-random{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}.recommendation{background:rgba(255,209,102,.1);border:1.5px solid rgba(255,209,102,.3);border-radius:12px;padding:14px 18px;max-width:600px;width:100%;font-size:.9rem}.rec-label{color:#FFD166;font-weight:700;margin-bottom:8px;font-size:.8rem}.rec-text{color:#fff;line-height:1.6}.rec-input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px;color:#fff;font-size:.9rem;margin-top:8px;outline:none;font-family:inherit}.counter{color:#c5bff5;font-size:.85rem;text-align:center;margin-bottom:8px}</style></head><body>
+<h1>🎤 Camp Match Interview</h1><p class="sub">Activity 9 — Reveal questions one by one. Take notes on your partner's answers!</p>
+<div class="counter" id="counter">Question 1 of 12</div>
+<div class="card-area"><div class="int-card" id="intCard">
+  <div class="card-cat" id="cardCat"></div>
+  <div class="card-q" id="cardQ"></div>
+  <div class="card-starter" id="cardStarter"></div>
+  <div class="notes-area"><div class="notes-label">📝 My notes:</div><textarea class="notes-input" id="notes" rows="3" placeholder="Write your partner's answer here..."></textarea></div>
+</div></div>
+<div class="btn-row">
+  <button class="btn btn-random" onclick="randomQ()">🎲 Random question</button>
+  <button class="btn btn-next" onclick="nextQ()">Next question →</button>
+</div>
+<div class="recommendation">
+  <div class="rec-label">🏕️ MY RECOMMENDATION</div>
+  <div class="rec-text">After the interview, complete this sentence:</div>
+  <input class="rec-input" placeholder="I think you should go to ___ camp because...">
+</div>
+<script>
+const QS=[
+  {cat:"🎨 Interests",q:"What do you like to do in your free time?",starter:"<strong>Sentence starters:</strong> I like to… / My hobby is… / In my free time, I enjoy…"},
+  {cat:"🎨 Interests",q:"Do you prefer being inside or outside? Why?",starter:"<strong>Sentence starters:</strong> I prefer… because… / I like being… more than…"},
+  {cat:"💪 Abilities",q:"What can you do well? (sports, art, languages...)",starter:"<strong>Sentence starters:</strong> I can… really well. / I am good at… / I know how to…"},
+  {cat:"💪 Abilities",q:"What can't you do, or what don't you like doing?",starter:"<strong>Sentence starters:</strong> I can't… / I don't like… because…"},
+  {cat:"🌍 Preferences",q:"Do you like working with your hands — painting, building, creating?",starter:"<strong>Yes/No + explain:</strong> Yes, I like… / No, I prefer…"},
+  {cat:"🌍 Preferences",q:"Do you like physical activities — running, sports, moving a lot?",starter:"<strong>Yes/No + explain:</strong> Yes, I love… / I would rather…"},
+  {cat:"🌍 Preferences",q:"Do you like learning new things — science, experiments, technology?",starter:"<strong>Yes/No + explain:</strong> Yes, especially… / Not really, I prefer…"},
+  {cat:"🌍 Preferences",q:"Do you like animals? Which ones?",starter:"<strong>Yes/No + explain:</strong> Yes, I love… / I prefer… to…"},
+  {cat:"🧠 Personality",q:"Do you like working alone or in a group?",starter:"<strong>Sentence starters:</strong> I prefer working… because… / I like… better."},
+  {cat:"🧠 Personality",q:"Do you like adventure or calm activities? Why?",starter:"<strong>Sentence starters:</strong> I like… more because… / Adventure makes me feel… / Calm activities help me…"},
+  {cat:"🎯 Final question",q:"What would be your perfect camp day?",starter:"<strong>Sentence starters:</strong> My perfect day would start with… / In the morning I would… / At night I would…"},
+  {cat:"🎯 Final question",q:"What is ONE thing you absolutely do NOT want to do at camp?",starter:"<strong>Sentence starters:</strong> I really don't want to… / I would hate… because…"},
+];
+let idx=0;
+function showQ(q){
+  document.getElementById('cardCat').textContent=q.cat;
+  document.getElementById('cardQ').textContent=q.q;
+  document.getElementById('cardStarter').innerHTML=q.starter;
+  document.getElementById('notes').value='';
+  document.getElementById('counter').textContent='Question '+(idx+1)+' of '+QS.length;
+}
+function nextQ(){idx=(idx+1)%QS.length;showQ(QS[idx]);}
+function randomQ(){idx=Math.floor(Math.random()*QS.length);showQ(QS[idx]);}
+showQ(QS[0]);
+</script></body></html>

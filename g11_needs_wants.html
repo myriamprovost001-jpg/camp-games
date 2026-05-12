@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 11 — Needs vs Wants</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#854F0B,#3a2000);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#f5d5a0;font-size:.85rem;text-align:center;margin-bottom:12px}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#f5d5a0;text-transform:uppercase;text-align:center}.rule-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,209,102,.3);border-radius:10px;padding:10px 16px;max-width:620px;width:100%;margin-bottom:12px;font-size:.88rem;text-align:center;line-height:1.6}.rule-box strong{color:#FFD166}.item-card{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:16px;padding:24px;max-width:460px;width:100%;text-align:center;margin-bottom:14px}.item-emoji{font-size:3.5rem;margin-bottom:10px}.item-name{font-size:1.3rem;font-weight:700;margin-bottom:8px}.item-desc{color:#f5d5a0;font-size:.9rem;margin-bottom:16px}.btn-row{display:flex;gap:14px;justify-content:center}.choice-btn{border:none;border-radius:12px;padding:14px 32px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .15s}.btn-need{background:#2db450;color:#fff}.btn-want{background:#c83232;color:#fff}.btn-need:hover{background:#25993f;transform:scale(1.04)}.btn-want:hover{background:#a82828;transform:scale(1.04)}.feedback{min-height:36px;text-align:center;font-size:.95rem;font-weight:700;margin:8px 0;color:#FFD166}.reason{background:rgba(255,255,255,.08);border-radius:8px;padding:8px 14px;font-size:.82rem;color:#f5d5a0;max-width:460px;width:100%;text-align:center;min-height:36px}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#3a2000;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:400px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#3a2000}</style></head><body>
+<h1>🏕️ Need or Want?</h1><p class="sub">Activity 11 — Is each item a NEED or a WANT at summer camp?</p>
+<div class="rule-box"><strong>NEED</strong> = you MUST have it to be safe and healthy &nbsp;|&nbsp; <strong>WANT</strong> = nice to have, but not essential</div>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/15</div><div class="hl">Item</div></div></div>
+<div class="item-card"><div class="item-emoji" id="emoji"></div><div class="item-name" id="name"></div><div class="item-desc" id="desc"></div><div class="btn-row"><button class="choice-btn btn-need" onclick="answer(true)">✅ NEED</button><button class="choice-btn btn-want" onclick="answer(false)">🛍️ WANT</button></div></div>
+<div class="feedback" id="fb"></div>
+<div class="reason" id="reason"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">Results!</h2><div class="score-big" id="fs"></div><p style="color:#f5d5a0" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const ITEMS=[
+  {emoji:"🛌",name:"Sleeping bag",need:true,reason:"You need it to sleep warmly and safely outdoors."},
+  {emoji:"🧴",name:"Sunscreen",need:true,reason:"You need it to protect your skin — health and safety."},
+  {emoji:"🎮",name:"Video game console",need:false,reason:"Fun to have, but you can survive camp without it!"},
+  {emoji:"🍶",name:"Water bottle",need:true,reason:"You need water to stay hydrated — essential survival."},
+  {emoji:"🔦",name:"Flashlight",need:true,reason:"You need it to see safely at night outdoors."},
+  {emoji:"🧸",name:"Stuffed animal",need:false,reason:"Comforting, but not essential for safety or health."},
+  {emoji:"🏥",name:"First aid kit",need:true,reason:"You need it for injuries and emergencies — safety first!"},
+  {emoji:"🍬",name:"Candy bag",need:false,reason:"Sweet treat, but definitely a want — not a survival need."},
+  {emoji:"🧥",name:"Rain poncho",need:true,reason:"You need it to stay dry and avoid getting sick."},
+  {emoji:"👟",name:"Extra shoes",need:true,reason:"You need dry footwear if yours get wet on a hike."},
+  {emoji:"🧭",name:"Compass",need:true,reason:"You need it for navigation safety on trails."},
+  {emoji:"🔊",name:"Portable speaker",need:false,reason:"Great for fun, but not essential for camp safety."},
+  {emoji:"🦟",name:"Bug spray",need:true,reason:"You need it to protect against insect bites and diseases."},
+  {emoji:"🛏️",name:"Pillow",need:false,reason:"Comfortable, but not essential — you can use a rolled shirt."},
+  {emoji:"🦺",name:"Life jacket",need:true,reason:"You must have it for water activities — critical safety item."},
+];
+let items=[],idx=0,score=0;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){items=shuffle([...ITEMS]);idx=0;score=0;document.getElementById('overlay').style.display='none';show()}
+function show(){
+  if(idx>=items.length){end();return}
+  const it=items[idx];
+  document.getElementById('qn').textContent=(idx+1)+'/'+items.length;
+  document.getElementById('emoji').textContent=it.emoji;
+  document.getElementById('name').textContent=it.name;
+  document.getElementById('desc').textContent='';
+  document.getElementById('fb').textContent='';
+  document.getElementById('reason').textContent='';
+}
+function answer(isNeed){
+  const it=items[idx];
+  const correct=isNeed===it.need;
+  if(correct){score+=10;document.getElementById('fb').textContent=(isNeed?'✅ Correct! It IS a need.':'✅ Correct! It IS a want.');document.getElementById('fb').style.color='#4ade80';}
+  else{document.getElementById('fb').textContent=(isNeed?'❌ Actually this is a want!':'❌ Actually this is a need!');document.getElementById('fb').style.color='#f87171';}
+  document.getElementById('reason').textContent='💡 '+it.reason;
+  document.getElementById('score').textContent=score;
+  setTimeout(()=>{idx++;show()},2000);
+}
+function end(){document.getElementById('fs').textContent=score+' / '+(items.length*10);document.getElementById('fm').textContent=score>=120?"Smart packer! 🏆":"Review what you really need at camp! 💪";document.getElementById('overlay').style.display='flex'}
+init();
+</script></body></html>

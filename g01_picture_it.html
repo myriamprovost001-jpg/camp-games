@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 1 — Picture It!</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a4a2e,#0d2b1a);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;color:#fff}
+h1{font-size:1.9rem;color:#FFD166;margin-bottom:4px;text-align:center}
+.sub{color:#a8e6c0;font-size:.9rem;margin-bottom:18px;text-align:center}
+.hud{display:flex;gap:20px;background:rgba(0,0,0,.3);border-radius:12px;padding:8px 22px;margin-bottom:18px}
+.hv{font-size:1.6rem;font-weight:700;color:#FFD166;text-align:center}
+.hl{font-size:.65rem;color:#a8e6c0;text-transform:uppercase;text-align:center}
+.card{width:340px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:18px;padding:30px 24px;text-align:center;margin-bottom:16px}
+.emoji-big{font-size:5rem;margin-bottom:12px;display:block;min-height:90px;position:relative}
+.letter-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.letter-box{width:38px;height:42px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#FFD166;transition:all .3s}
+.letter-box.revealed{background:rgba(255,209,102,.2);border-color:#FFD166}
+.letter-box.space{background:transparent;border-color:transparent;width:16px}
+.hint-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.hint-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:5px 14px;font-size:.85rem;color:#fff;cursor:pointer;transition:all .15s}
+.hint-chip:hover{background:rgba(255,255,255,.2)}
+.hint-chip.used{opacity:.3;pointer-events:none}
+.clue-box{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);border-radius:10px;padding:10px 16px;font-size:.9rem;color:#FFD166;margin-bottom:14px;min-height:40px}
+.btn-row{display:flex;gap:10px;justify-content:center}
+.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;transition:transform .1s}
+.btn:hover{transform:scale(1.04)}
+.btn-reveal{background:#FFD166;color:#1a4a2e}
+.btn-next{background:#2d8a5e;color:#fff}
+.feedback{font-size:1.3rem;font-weight:700;min-height:30px;margin-bottom:8px;color:#4ade80}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}
+.modal{background:#1a4a2e;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}
+.modal h2{color:#FFD166;font-size:1.8rem;margin-bottom:10px}
+.modal p{color:#a8e6c0;margin-bottom:12px}
+.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}
+</style></head><body>
+<h1>🏕️ Picture It!</h1>
+<p class="sub">Activity 1 — Letters are revealed one by one. Guess the camp word!</p>
+<div class="hud">
+  <div><div class="hv" id="score">0</div><div class="hl">Score</div></div>
+  <div><div class="hv" id="qn">1/20</div><div class="hl">Word</div></div>
+  <div><div class="hv" id="streak">0</div><div class="hl">Streak</div></div>
+</div>
+<div class="card">
+  <span class="emoji-big" id="emoji">🎒</span>
+  <div class="clue-box" id="clue"></div>
+  <div class="letter-row" id="letterRow"></div>
+  <div class="feedback" id="fb"></div>
+  <div class="hint-row" id="hintRow"></div>
+  <div class="btn-row">
+    <button class="btn btn-reveal" onclick="revealNext()">Reveal letter</button>
+    <button class="btn btn-next" onclick="nextWord()">Next word →</button>
+  </div>
+</div>
+<div class="overlay" id="overlay"><div class="modal">
+  <h2>Camp complete!</h2><div class="score-big" id="finalScore"></div>
+  <p id="finalMsg"></p><button class="btn btn-reveal" onclick="init()">Play again</button>
+</div></div>
+<script>
+const WORDS=[
+  {word:"BACKPACK",emoji:"🎒",clue:"A bag you carry on your back."},
+  {word:"FLASHLIGHT",emoji:"🔦",clue:"A small light used in the dark."},
+  {word:"SLEEPING BAG",emoji:"🛌",clue:"A warm bag used for sleeping outdoors."},
+  {word:"COMPASS",emoji:"🧭",clue:"A tool used to find direction."},
+  {word:"WATER BOTTLE",emoji:"🍶",clue:"A container used to carry water."},
+  {word:"SUNSCREEN",emoji:"🧴",clue:"Cream that protects your skin from the sun."},
+  {word:"BUG SPRAY",emoji:"🦟",clue:"A product that keeps insects away."},
+  {word:"TENT",emoji:"⛺",clue:"A shelter made of fabric for sleeping outside."},
+  {word:"MAP",emoji:"🗺️",clue:"A drawing that shows where things are."},
+  {word:"JOURNAL",emoji:"📓",clue:"A notebook where you write personal thoughts."},
+  {word:"CAMERA",emoji:"📷",clue:"A device used to take pictures."},
+  {word:"TOWEL",emoji:"🏖️",clue:"A cloth used to dry your body."},
+  {word:"SOAP",emoji:"🧼",clue:"A product used to clean your body."},
+  {word:"TOOTHBRUSH",emoji:"🪥",clue:"A tool used to clean your teeth."},
+  {word:"LIFE JACKET",emoji:"🦺",clue:"A vest that helps you float in water."},
+  {word:"CANOE",emoji:"🛶",clue:"A small narrow boat you paddle."},
+  {word:"CAMPFIRE",emoji:"🔥",clue:"A fire made outdoors for warmth and cooking."},
+  {word:"COUNSELOR",emoji:"👩‍🏫",clue:"A person who leads and helps campers."},
+  {word:"CABIN",emoji:"🏠",clue:"A small wooden house where campers sleep."},
+  {word:"SOUVENIR",emoji:"🎁",clue:"An object you keep to remember a place."},
+];
+let words=[],idx=0,score=0,streak=0,revealed=0,revealTimer=null;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){words=shuffle([...WORDS]);idx=0;score=0;streak=0;document.getElementById('overlay').style.display='none';showWord()}
+function showWord(){
+  if(idx>=words.length){endGame();return}
+  const w=words[idx];revealed=0;
+  document.getElementById('emoji').textContent=w.emoji;
+  document.getElementById('clue').textContent=w.clue;
+  document.getElementById('qn').textContent=`${idx+1}/${words.length}`;
+  document.getElementById('fb').textContent='';
+  renderLetters();buildHints(w);
+}
+function renderLetters(){
+  const w=words[idx].word;
+  const row=document.getElementById('letterRow');row.innerHTML='';
+  w.split('').forEach((ch,i)=>{
+    const b=document.createElement('div');
+    if(ch===' '){b.className='letter-box space';b.textContent=' ';}
+    else{
+      b.className='letter-box'+(i<revealed?' revealed':'');
+      b.textContent=i<revealed?ch:'_';
+    }
+    row.appendChild(b);
+  });
+}
+function buildHints(w){
+  const row=document.getElementById('hintRow');row.innerHTML='';
+  const letters=[...new Set(w.word.replace(/ /g,'').split(''))].sort().slice(0,8);
+  letters.forEach(l=>{
+    const c=document.createElement('div');c.className='hint-chip';c.textContent=l;
+    c.onclick=()=>{c.classList.add('used');checkLetter(l)};row.appendChild(c);
+  });
+}
+function checkLetter(l){
+  const w=words[idx].word;
+  const fb=document.getElementById('fb');
+  if(w.includes(l)){fb.textContent='✅ Yes! '+l+' is in the word!';fb.style.color='#4ade80';}
+  else{fb.textContent='❌ No, '+l+' is not in the word.';fb.style.color='#f87171';}
+}
+function revealNext(){
+  const w=words[idx].word;
+  while(revealed<w.length&&w[revealed]===' ')revealed++;
+  if(revealed<w.length){revealed++;renderLetters();}
+  if(revealed>=w.length){document.getElementById('fb').textContent='The word is: '+w;streak=0;document.getElementById('streak').textContent=streak;}
+}
+function nextWord(){
+  const w=words[idx].word;
+  if(revealed>=w.length-1){score=Math.max(0,score);} 
+  else{score+=Math.max(0,10-revealed)*2;streak++;document.getElementById('streak').textContent=streak;}
+  score=Math.max(0,score+10);
+  document.getElementById('score').textContent=score;
+  idx++;showWord();
+}
+function endGame(){
+  document.getElementById('finalScore').textContent=score+' pts';
+  const msgs=["Keep practising! 💪","Good effort! 📖","Great job! 🌟","Amazing! 🏆"];
+  document.getElementById('finalMsg').textContent=msgs[Math.min(3,Math.floor(score/80))];
+  document.getElementById('overlay').style.display='flex';
+}
+init();
+</script></body></html>

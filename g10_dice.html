@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 10 — Discussion Dice</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#8B1A1A,#3a0808);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#f5a0a0;font-size:.85rem;text-align:center;margin-bottom:16px}.cat-tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}.cat-tab{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:7px 14px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}.cat-tab.active{background:#FFD166;color:#3a0808;border-color:#FFD166}.dice-area{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:16px}.die{width:110px;height:110px;background:rgba(255,255,255,.12);border:3px solid #FFD166;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:4rem;cursor:pointer;transition:all .3s;user-select:none}.die:hover{background:rgba(255,255,255,.2)}.die.rolling{animation:rolling .4s infinite}.q-reveal{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 22px;max-width:580px;width:100%;text-align:center}.q-num{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.q-text{font-size:1.05rem;line-height:1.6;min-height:60px}.starter-box{background:rgba(255,209,102,.1);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.85rem;color:#f5d5a0}.timer-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}.timer-btn{border:none;border-radius:8px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer}.tb-start{background:#2db450;color:#fff}.tb-stop{background:#c83232;color:#fff}.timer-display{font-size:1.4rem;font-weight:700;color:#FFD166;min-width:50px}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#3a0808;transition:transform .1s;margin-top:10px}.btn:hover{transform:scale(1.04)}@keyframes rolling{0%{transform:rotate(0deg)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0deg)}}</style></head><body>
+<h1>🎲 Discussion Dice!</h1><p class="sub">Activity 10 — Roll the die, read the question, and discuss with your team!</p>
+<div class="cat-tabs" id="catTabs"></div>
+<div class="dice-area">
+  <div class="die" id="die" onclick="rollDie()">🎲</div>
+  <button class="btn" onclick="rollDie()">Roll the die!</button>
+</div>
+<div class="timer-row" style="justify-content:center">
+  <button class="timer-btn tb-start" onclick="startTimer()">▶ Start timer</button>
+  <div class="timer-display" id="timerDisplay">2:00</div>
+  <button class="timer-btn tb-stop" onclick="stopTimer()">■ Stop</button>
+</div>
+<div class="q-reveal" id="qReveal"><div class="q-num" id="qNum">Roll the die to get a question!</div><div class="q-text" id="qText">Click "Roll the die!" above to start.</div><div class="starter-box" id="starter">Sentence starters will appear here.</div></div>
+<script>
+const CATS={
+  "Cabin Life":[
+    "How do you feel when you share a cabin with someone you just met?",
+    "What would you do if your bunkmate kept you up at night?",
+    "How do you make someone feel welcome at camp?",
+    "What's one thing that makes a great cabin teammate?",
+    "How do you handle homesickness when it hits?",
+  ],
+  "Nature & Adventure":[
+    "What's the coolest thing you've ever done outdoors?",
+    "If you got lost on a hike, what would you do first?",
+    "What animal or nature discovery amazed you most?",
+    "Have you ever felt really peaceful in nature? When?",
+    "What outdoor skill do you wish you were better at?",
+  ],
+  "Camp Challenges":[
+    "What would you do if you were too scared to try a new activity?",
+    "Have you ever encouraged someone who wanted to give up?",
+    "What's something that pushed you outside your comfort zone?",
+    "How do you deal with losing a team competition?",
+    "What would you do if you saw someone struggle at camp?",
+  ],
+  "Your Unique Self":[
+    "What's something you brought to camp that shows who you are?",
+    "What activity surprised you by how much you enjoyed it?",
+    "Is there a talent or hobby you've shared with others?",
+    "What would you say to a camper who feels they don't fit in?",
+    "What's something about you that most campers don't know?",
+  ],
+  "Dreams & Memories":[
+    "If you could design your own perfect camp activity, what would it be?",
+    "What's one memory from camp you never want to forget?",
+    "What's a goal you want to achieve before camp ends?",
+    "If you were a camp counselor, what would you do differently?",
+    "What has camp taught you that you'll carry home?",
+  ],
+  "Teamwork & Values":[
+    "What does it mean to be a fair player during camp games?",
+    "How would you handle it if someone cheated on your team?",
+    "Why is it important to follow camp rules, even when no one is watching?",
+    "How can you show respect to camp counselors and staff?",
+    "What would you do if a teammate was left out of a group activity?",
+  ],
+};
+const FACES=["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣"];
+const STARTERS=["I would… because…","I think… / I feel…","In my opinion…","If I were… I would…","I believe… because…"];
+let activeCat="Cabin Life",timerInt=null,timerSec=120;
+function buildTabs(){
+  const el=document.getElementById('catTabs');el.innerHTML='';
+  Object.keys(CATS).forEach(cat=>{
+    const tab=document.createElement('div');tab.className='cat-tab'+(cat===activeCat?' active':'');
+    tab.textContent=cat;tab.onclick=()=>{activeCat=cat;buildTabs();document.getElementById('qText').textContent='Roll the die to get a question for: '+cat;};
+    el.appendChild(tab);
+  });
+}
+function rollDie(){
+  const die=document.getElementById('die');die.classList.add('rolling');
+  let count=0;const int=setInterval(()=>{die.textContent=FACES[Math.floor(Math.random()*6)];count++;if(count>12){clearInterval(int);die.classList.remove('rolling');const n=Math.floor(Math.random()*5);die.textContent=FACES[n];showQ(n);}},80);
+}
+function showQ(n){
+  const qs=CATS[activeCat];
+  document.getElementById('qNum').textContent='Question '+( n+1)+' — '+activeCat;
+  document.getElementById('qText').textContent=qs[n];
+  document.getElementById('starter').textContent='💬 Starters: '+STARTERS[Math.floor(Math.random()*STARTERS.length)];
+}
+function startTimer(){timerSec=120;stopTimer();timerInt=setInterval(()=>{timerSec--;const m=Math.floor(timerSec/60);const s=timerSec%60;document.getElementById('timerDisplay').textContent=m+':'+(s<10?'0':'')+s;if(timerSec<=0){clearInterval(timerInt);document.getElementById('timerDisplay').textContent='⏰ Done!';}},1000);}
+function stopTimer(){if(timerInt)clearInterval(timerInt);document.getElementById('timerDisplay').textContent='2:00';}
+buildTabs();
+</script></body></html>

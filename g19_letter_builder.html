@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 19 — Letter Builder</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1F3864,#0d2040);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#a8d4f5;font-size:.85rem;text-align:center;margin-bottom:12px}.layout{display:flex;gap:14px;max-width:900px;width:100%;flex-wrap:wrap}.builder{flex:1;min-width:280px}.preview{flex:1;min-width:260px}.section-card{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:14px;margin-bottom:10px}.section-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}.section-num{background:#FFD166;color:#1F3864;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0}.section-title{color:#FFD166;font-size:.82rem;font-weight:700;text-transform:uppercase}.section-hint{color:#a8d4f5;font-size:.78rem;margin-bottom:8px;line-height:1.5}.inp{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px;color:#fff;font-size:.85rem;outline:none;font-family:inherit;margin-bottom:6px;resize:none}.inp:focus{border-color:#FFD166}.starter-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}.starter{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);border-radius:6px;padding:3px 9px;font-size:.75rem;color:#FFD166;cursor:pointer;transition:all .15s}.starter:hover{background:rgba(255,209,102,.2)}.preview-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;position:sticky;top:16px}.preview-title{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:10px}.letter-preview{background:rgba(255,255,255,.04);border-radius:8px;padding:12px;font-size:.82rem;line-height:1.9;color:#eee;min-height:400px;white-space:pre-wrap;word-break:break-word}.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}.btn{border:none;border-radius:10px;padding:9px 18px;font-size:.85rem;font-weight:700;cursor:pointer;transition:transform .1s}.btn:hover{transform:scale(1.04)}.btn-build{background:#FFD166;color:#1F3864}.btn-clear{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}.check-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.82rem;border-bottom:1px solid rgba(255,255,255,.08)}.check-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}.check-dot.done{background:#2db450}.check-dot.todo{background:rgba(255,255,255,.2)}.score-strip{background:rgba(0,0,0,.2);border-radius:8px;padding:8px 12px;text-align:center;margin-top:8px;font-size:.85rem;color:#FFD166;font-weight:700}</style></head><body>
+<h1>✉️ Letter Builder</h1><p class="sub">Activity 19 — Build your letter to your parents step by step!</p>
+<div class="layout">
+  <div class="builder">
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">1</div><div class="section-title">Date</div></div>
+      <div class="section-hint">Write today's date at the top of your letter.</div>
+      <div class="starter-chips"><span class="starter" onclick="fillDate()">Insert today's date</span></div>
+      <input class="inp" id="date" placeholder="July 14, 2026.">
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">2</div><div class="section-title">Greeting (Salutation)</div></div>
+      <div class="section-hint">Say hello to your reader. Use a comma after the name.</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('greeting','Dear Mom and Dad,')">Dear Mom and Dad,</span>
+        <span class="starter" onclick="ins('greeting','Dear Grandma,')">Dear Grandma,</span>
+        <span class="starter" onclick="ins('greeting','Hi Mom,')">Hi Mom,</span>
+      </div>
+      <input class="inp" id="greeting" placeholder="Dear Mom and Dad,">
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">3</div><div class="section-title">Introduction — Why you are writing & how you are doing</div></div>
+      <div class="section-hint">Tell your parents why you are writing and how camp is going so far.</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('intro','I am writing to tell you about my first week at camp. ')">I am writing to tell you...</span>
+        <span class="starter" onclick="ins('intro','I am having a really fun time here! ')">I am having a fun time!</span>
+        <span class="starter" onclick="ins('intro','At first I felt nervous, but now I feel much more comfortable. ')">At first I felt nervous...</span>
+      </div>
+      <textarea class="inp" id="intro" rows="3" placeholder="I am writing to tell you about my first week at camp..."></textarea>
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">4</div><div class="section-title">Body — A typical day at camp</div></div>
+      <div class="section-hint">Describe what a normal day looks like. Use time words: usually, every morning, after breakfast, at night...</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('body1','A typical day at camp is always busy and exciting. ')">A typical day...</span>
+        <span class="starter" onclick="ins('body1','We usually wake up at 7:00 and go to the mess hall for breakfast. ')">We usually wake up...</span>
+        <span class="starter" onclick="ins('body1','Right now, I am learning how to ')">Right now, I am learning...</span>
+      </div>
+      <textarea class="inp" id="body1" rows="3" placeholder="A typical day at camp starts with..."></textarea>
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">5</div><div class="section-title">Body — Two favourite activities</div></div>
+      <div class="section-hint">Tell your parents about your two favourite activities and WHY you love them.</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('body2','So far, my two favourite activities are ')">My two favourites are...</span>
+        <span class="starter" onclick="ins('body2','I love ___ because ')">I love ___ because...</span>
+        <span class="starter" onclick="ins('body2','Two days ago, we ')">Two days ago...</span>
+      </div>
+      <textarea class="inp" id="body2" rows="3" placeholder="So far, my two favourite activities are..."></textarea>
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">6</div><div class="section-title">Body — One thing you dislike</div></div>
+      <div class="section-hint">Be honest — what is the hardest or most annoying thing about camp?</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('body3','The thing I hate the most at camp is ')">The thing I hate...</span>
+        <span class="starter" onclick="ins('body3','I forgot to ')">I forgot to...</span>
+        <span class="starter" onclick="ins('body3','There are a LOT of ')">There are a LOT of...</span>
+      </div>
+      <textarea class="inp" id="body3" rows="2" placeholder="The thing I dislike most is..."></textarea>
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">7</div><div class="section-title">Conclusion — A wish and a hope</div></div>
+      <div class="section-hint">Wrap up your letter with a positive thought and something you are looking forward to.</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('conclusion','Overall, I am really happy here and I already feel more confident. ')">Overall, I am happy...</span>
+        <span class="starter" onclick="ins('conclusion','I wish you could see how beautiful the camp is. ')">I wish you could see...</span>
+        <span class="starter" onclick="ins('conclusion','I hope the second week is even more exciting than the first! ')">I hope next week...</span>
+      </div>
+      <textarea class="inp" id="conclusion" rows="2" placeholder="Overall, I am really happy here..."></textarea>
+    </div>
+    <div class="section-card">
+      <div class="section-header"><div class="section-num">8</div><div class="section-title">Closing & Signature</div></div>
+      <div class="section-hint">Say goodbye and sign your name.</div>
+      <div class="starter-chips">
+        <span class="starter" onclick="ins('closing','Love,')">Love,</span>
+        <span class="starter" onclick="ins('closing','Your friend,')">Your friend,</span>
+        <span class="starter" onclick="ins('closing','Miss you lots,')">Miss you lots,</span>
+      </div>
+      <input class="inp" id="closing" placeholder="Love,">
+      <input class="inp" id="signature" placeholder="Your name here">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-build" onclick="buildPreview()">Build my letter!</button>
+      <button class="btn btn-clear" onclick="clearAll()">Clear all</button>
+    </div>
+  </div>
+  <div class="preview">
+    <div class="preview-card">
+      <div class="preview-title">Your letter — live preview</div>
+      <div class="letter-preview" id="letterPreview">Your letter will appear here as you fill in the sections...</div>
+      <div style="margin-top:10px">
+        <div style="color:#FFD166;font-size:.75rem;font-weight:700;text-transform:uppercase;margin-bottom:6px">Checklist</div>
+        <div id="checklist"></div>
+        <div class="score-strip" id="scoreStrip">0 / 7 sections complete</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const FIELDS=[
+  {id:'date',label:'Date'},
+  {id:'greeting',label:'Greeting'},
+  {id:'intro',label:'Introduction'},
+  {id:'body1',label:'Body 1 — Typical day'},
+  {id:'body2',label:'Body 2 — Favourite activities'},
+  {id:'body3',label:'Body 3 — Something you dislike'},
+  {id:'conclusion',label:'Conclusion'},
+];
+function get(id){return document.getElementById(id).value.trim()}
+function ins(id,text){const el=document.getElementById(id);el.value+=text;el.focus();buildPreview();}
+function fillDate(){const d=new Date();document.getElementById('date').value=d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'.';buildPreview();}
+function buildPreview(){
+  const parts=[];
+  if(get('date'))parts.push(get('date'));
+  if(get('greeting'))parts.push('
+'+get('greeting'));
+  if(get('intro'))parts.push('
+'+get('intro'));
+  if(get('body1'))parts.push('
+'+get('body1'));
+  if(get('body2'))parts.push('
+'+get('body2'));
+  if(get('body3'))parts.push('
+'+get('body3'));
+  if(get('conclusion'))parts.push('
+'+get('conclusion'));
+  if(get('closing'))parts.push('
+
+'+get('closing'));
+  if(get('signature'))parts.push('
+'+get('signature'));
+  document.getElementById('letterPreview').textContent=parts.join(' ')||'Your letter will appear here...';
+  updateChecklist();
+}
+function updateChecklist(){
+  const el=document.getElementById('checklist');el.innerHTML='';
+  let done=0;
+  FIELDS.forEach(f=>{
+    const filled=get(f.id).length>0;if(filled)done++;
+    const d=document.createElement('div');d.className='check-item';
+    d.innerHTML='<div class="check-dot '+(filled?'done':'todo')+'"></div><span>'+f.label+'</span>';
+    el.appendChild(d);
+  });
+  document.getElementById('scoreStrip').textContent=done+' / 7 sections complete'+(done===7?' ✅':'');
+}
+function clearAll(){
+  ['date','greeting','intro','body1','body2','body3','conclusion','closing','signature'].forEach(id=>{document.getElementById(id).value='';});
+  buildPreview();
+}
+FIELDS.forEach(f=>document.getElementById(f.id).addEventListener('input',buildPreview));
+buildPreview();
+</script></body></html>

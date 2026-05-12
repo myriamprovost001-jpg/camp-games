@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Act 13 — Survival Sorting</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#2D1B69,#1a0f40);min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;color:#fff}h1{font-size:1.8rem;color:#FFD166;text-align:center;margin-bottom:4px}.sub{color:#c5bff5;font-size:.85rem;text-align:center;margin-bottom:12px}.cats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:660px;width:100%;margin-bottom:12px}.cat-card{border-radius:12px;padding:12px 14px}.cat-card h3{font-size:.85rem;font-weight:700;margin-bottom:4px}.cat-card p{font-size:.78rem;opacity:.85}.cat-a{background:rgba(45,138,94,.25);border:1.5px solid #2d8a5e}.cat-b{background:rgba(255,165,0,.2);border:1.5px solid #f59e0b}.cat-c{background:rgba(96,165,250,.2);border:1.5px solid #60a5fa}.cat-d{background:rgba(248,113,113,.2);border:1.5px solid #f87171}.hud{display:flex;gap:16px;background:rgba(0,0,0,.3);border-radius:12px;padding:7px 18px;margin-bottom:12px}.hv{font-size:1.5rem;font-weight:700;color:#FFD166;text-align:center}.hl{font-size:.65rem;color:#c5bff5;text-transform:uppercase;text-align:center}.scenario-card{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 22px;max-width:560px;width:100%;text-align:center;margin-bottom:12px}.sc-num{color:#FFD166;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.sc-text{font-size:1rem;line-height:1.6;margin-bottom:12px}.choices{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.choice{border:2px solid;border-radius:10px;padding:10px;text-align:center;cursor:pointer;font-weight:700;font-size:.9rem;transition:all .15s}.choice-a{border-color:#2d8a5e;color:#4ade80;background:rgba(45,138,94,.15)}.choice-b{border-color:#f59e0b;color:#fbbf24;background:rgba(245,158,11,.15)}.choice-c{border-color:#60a5fa;color:#93c5fd;background:rgba(96,165,250,.15)}.choice-d{border-color:#f87171;color:#fca5a5;background:rgba(248,113,113,.15)}.choice:hover{opacity:.8;transform:scale(1.04)}.choice.correct{background:rgba(45,180,80,.4)}.choice.wrong{background:rgba(200,50,50,.3)}.msg{min-height:32px;text-align:center;font-size:.9rem;font-weight:700;color:#FFD166;margin:8px 0}.btn{border:none;border-radius:10px;padding:10px 22px;font-size:.9rem;font-weight:700;cursor:pointer;background:#FFD166;color:#2D1B69}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}.modal{background:#1a0f40;border:3px solid #FFD166;border-radius:20px;padding:36px;text-align:center;max-width:380px}.score-big{font-size:3rem;font-weight:700;color:#FFD166;margin:10px 0}</style></head><body>
+<h1>🪓 Survival Sorting!</h1><p class="sub">Activity 13 — Read each scenario and choose the right survival action!</p>
+<div class="cats-grid">
+  <div class="cat-card cat-a"><h3>A — Stay calm & wait</h3><p>Sit tight, signal for help, don't panic</p></div>
+  <div class="cat-card cat-b"><h3>B — Use your equipment</h3><p>Get out your compass, map, first aid kit</p></div>
+  <div class="cat-card cat-c"><h3>C — Work as a team</h3><p>Communicate, help each other, share resources</p></div>
+  <div class="cat-card cat-d"><h3>D — Follow camp rules</h3><p>Do what the counselors say, stay on the trail</p></div>
+</div>
+<div class="hud"><div><div class="hv" id="score">0</div><div class="hl">Score</div></div><div><div class="hv" id="qn">1/8</div><div class="hl">Scenario</div></div></div>
+<div class="scenario-card"><div class="sc-num" id="scNum">Scenario 1</div><div class="sc-text" id="scText"></div><div class="choices" id="choices"></div></div>
+<div class="msg" id="msg"></div>
+<div class="overlay" id="overlay"><div class="modal"><h2 style="color:#FFD166">Survival expert!</h2><div class="score-big" id="fs"></div><p style="color:#c5bff5" id="fm"></p><button class="btn" style="margin-top:14px" onclick="init()">Play again</button></div></div>
+<script>
+const SCENARIOS=[
+  {text:"You are hiking and you get separated from your group. You don't know where you are.",a:"A",hint:"Stay where you are — it's easier for rescuers to find you if you don't keep moving."},
+  {text:"A thunderstorm starts while you are at the lake. Lightning is visible.",a:"D",hint:"Follow camp rules — leave the water immediately and get to shelter."},
+  {text:"Your tent pole breaks and it starts to rain heavily.",a:"B",hint:"Use your equipment — check your repair kit or use rope and branches."},
+  {text:"A friend twists their ankle on the trail and can't walk well.",a:"C",hint:"Work as a team — support them, share the load, and call for help together."},
+  {text:"You are lost and your compass is in your backpack.",a:"B",hint:"Use your equipment — take out your compass and map to find your direction."},
+  {text:"Two teammates disagree about which trail to take.",a:"C",hint:"Work as a team — discuss calmly, look at the map together, vote if needed."},
+  {text:"You run out of water on a long hike.",a:"C",hint:"Work as a team — share whatever water is left and signal for help."},
+  {text:"Someone in your cabin feels very homesick and starts to cry.",a:"C",hint:"Work as a team — be kind, include them, and tell a counselor if needed."},
+];
+let qs=[],idx=0,score=0;
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function init(){qs=shuffle([...SCENARIOS]);idx=0;score=0;document.getElementById('overlay').style.display='none';render()}
+function render(){
+  if(idx>=qs.length){end();return}
+  const q=qs[idx];
+  document.getElementById('qn').textContent=(idx+1)+'/'+qs.length;
+  document.getElementById('scNum').textContent='Scenario '+(idx+1);
+  document.getElementById('scText').textContent=q.text;
+  document.getElementById('msg').textContent='';
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach(opt=>{
+    const d=document.createElement('div');d.className='choice choice-'+opt.toLowerCase();d.textContent=opt;
+    d.onclick=()=>{
+      document.querySelectorAll('.choice').forEach(c=>c.style.pointerEvents='none');
+      if(opt===q.a){d.classList.add('correct');score+=10;document.getElementById('msg').textContent='✅ Correct! '+q.hint;}
+      else{d.classList.add('wrong');document.querySelectorAll('.choice').forEach(c=>{if(c.textContent===q.a)c.classList.add('correct')});document.getElementById('msg').textContent='❌ Best answer was '+q.a+'. '+q.hint;}
+      document.getElementById('score').textContent=score;
+      setTimeout(()=>{idx++;render()},2000);
+    };ch.appendChild(d);
+  });
+}
+function end(){document.getElementById('fs').textContent=score+' / '+(qs.length*10);document.getElementById('fm').textContent=score>=70?"Survival expert! 🏆":"Review the categories and try again! 💪";document.getElementById('overlay').style.display='flex'}
+init();
+</script></body></html>
