@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case File: Vocabulary Jeopardy — Rebecca McKinley Unit</title>
+<style>
+  :root{
+    --navy-deep:#141f2b;
+    --navy-panel:#1c2b3a;
+    --navy-panel-2:#223449;
+    --manila:#d9c79a;
+    --manila-dim:#c4b184;
+    --ink:#f2ede1;
+    --ink-dim:#aab7c4;
+    --evidence-red:#a3312a;
+    --evidence-red-bright:#c23f37;
+    --line:#3a4e63;
+    --closed:#0e161e;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(163,49,42,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(163,49,42,0.08), transparent 45%),
+      var(--navy-deep);
+    background-attachment: fixed;
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 28px 20px 60px;
+  }
+
+  .wrap{ max-width: 1180px; margin: 0 auto; }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position: relative;
+    text-align:center;
+    margin-bottom: 30px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .pin{
+    position:absolute;
+    top:-14px; left:50%;
+    transform: translateX(-50%);
+    width:16px; height:16px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #e8776d, var(--evidence-red) 60%, #6b1f1a 100%);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+  }
+  .eyebrow{
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--evidence-red-bright);
+    margin: 6px 0 10px;
+  }
+  h1{
+    font-family: Arial Narrow, 'Helvetica Neue Condensed', Arial, sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: clamp(28px, 5vw, 46px);
+    margin: 0;
+    color: var(--manila);
+  }
+  .subtitle{
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---------- SCOREBOARD ---------- */
+  .scoreboard{
+    display:flex;
+    gap: 18px;
+    justify-content:center;
+    flex-wrap: wrap;
+    margin: 22px 0 30px;
+  }
+  .plate{
+    background: var(--navy-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 12px 20px;
+    min-width: 220px;
+    text-align:center;
+    position:relative;
+  }
+  .plate::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:3px;
+    background: var(--evidence-red);
+  }
+  .plate .team-label{
+    font-family: Arial Narrow, sans-serif;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    font-size:12px;
+    color: var(--ink-dim);
+  }
+  .plate .team-name{
+    font-family: Arial Narrow, sans-serif;
+    font-weight:800;
+    font-size: 18px;
+    color: var(--manila);
+    margin: 2px 0 8px;
+    background:transparent;
+    border:none;
+    text-align:center;
+    width:100%;
+    letter-spacing:0.03em;
+  }
+  .plate .score{
+    font-family:'Courier New', monospace;
+    font-size: 34px;
+    font-weight:700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .plate .btnrow{ display:flex; gap:8px; justify-content:center; }
+  .plate button.adj{
+    font-family:'Courier New', monospace;
+    background: var(--navy-panel-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor:pointer;
+    font-size:13px;
+  }
+  .plate button.adj:hover{ border-color: var(--evidence-red-bright); color: var(--manila); }
+  .reset-all{
+    display:block;
+    margin: 0 auto 28px;
+    background:none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 3px;
+    cursor:pointer;
+  }
+  .reset-all:hover{ color: var(--manila); border-color: var(--evidence-red-bright); }
+
+  /* ---------- BOARD ---------- */
+  .board{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .category-head{
+    background: var(--manila);
+    color: var(--navy-deep);
+    font-family: Arial Narrow, 'Helvetica Neue Condensed', Arial, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-align:center;
+    padding: 12px 8px;
+    border-radius: 4px 4px 0 0;
+    font-size: clamp(12px, 1.6vw, 15px);
+    line-height:1.2;
+    min-height: 54px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-bottom: 3px solid var(--evidence-red);
+  }
+  .cell{
+    background: var(--navy-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    min-height: 76px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background 0.15s, transform 0.1s;
+    position:relative;
+  }
+  .cell:hover:not(.done){
+    background: var(--navy-panel-2);
+    transform: translateY(-1px);
+  }
+  .cell .value{
+    font-family:'Courier New', monospace;
+    font-size: clamp(20px, 2.6vw, 28px);
+    font-weight:700;
+    color: var(--evidence-red-bright);
+  }
+  .cell.done{
+    background: var(--closed);
+    cursor:default;
+  }
+  .cell.done .value{ display:none; }
+  .cell.done::after{
+    content: "CASE CLOSED";
+    font-family:'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #45525e;
+    border: 1px solid #3a4653;
+    padding: 4px 6px;
+    border-radius: 2px;
+    transform: rotate(-8deg);
+  }
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position: fixed; inset:0;
+    background: rgba(6,10,15,0.86);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .overlay.open{ display:flex; }
+  .card{
+    background: var(--manila);
+    color: var(--navy-deep);
+    max-width: 680px;
+    width:100%;
+    border-radius: 6px;
+    padding: 40px 36px 32px;
+    position:relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    text-align:center;
+  }
+  .card .tag{
+    position:absolute;
+    top:-14px; left:50%;
+    transform: translateX(-50%);
+    background: var(--evidence-red);
+    color: #fff;
+    font-family:'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing:0.15em;
+    padding: 4px 14px;
+    border-radius: 3px;
+    text-transform:uppercase;
+  }
+  .card .category-tiny{
+    font-family: Arial Narrow, sans-serif;
+    font-weight:700;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-size: 13px;
+    color: #5c4a2a;
+    margin-bottom: 6px;
+  }
+  .card .clue{
+    font-size: clamp(19px, 2.6vw, 25px);
+    line-height:1.4;
+    margin: 10px 0 22px;
+    font-weight: 600;
+  }
+  .card .answer-block{
+    display:none;
+    border-top: 1px dashed #8a7748;
+    padding-top: 18px;
+    margin-top: 6px;
+  }
+  .card .answer-block.show{ display:block; }
+  .card .stamp{
+    display:inline-block;
+    font-family: Arial Narrow, sans-serif;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color: var(--evidence-red);
+    border: 3px solid var(--evidence-red);
+    padding: 6px 16px;
+    border-radius: 4px;
+    transform: rotate(-4deg);
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .card .response{
+    font-size: clamp(18px, 2.4vw, 22px);
+    font-weight: 700;
+    color: var(--navy-deep);
+  }
+  .card .btns{
+    margin-top: 26px;
+    display:flex;
+    gap: 10px;
+    justify-content:center;
+    flex-wrap: wrap;
+  }
+  .card button{
+    font-family:'Courier New', monospace;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border-radius: 4px;
+    border: none;
+    cursor:pointer;
+  }
+  .btn-reveal{ background: var(--navy-deep); color: var(--manila); }
+  .btn-reveal:hover{ background:#0c1620; }
+  .btn-close{ background: transparent; color: #5c4a2a; border: 1px solid #8a7748 !important; }
+  .btn-close:hover{ background: rgba(0,0,0,0.06); }
+
+  footer{
+    text-align:center;
+    margin-top: 40px;
+    font-family:'Courier New', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 760px){
+    .board{ grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .category-head{ font-size: 10px; padding: 8px 4px; min-height: 44px; }
+    .cell{ min-height: 54px; }
+    .cell .value{ font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="pin"></div>
+    <div class="eyebrow">West Plains High &middot; Case No. 25-4781</div>
+    <h1>Vocabulary Jeopardy</h1>
+    <div class="subtitle">Whatever Happened to Rebecca McKinley? — Review Game</div>
+  </header>
+
+  <div class="scoreboard" id="scoreboard"></div>
+  <button class="reset-all" id="resetAll">Reset entire game</button>
+
+  <div class="board" id="board"></div>
+
+  <footer>Click a value to reveal the clue. Click again to reveal the correct response (phrased as a question).</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="card">
+    <div class="tag" id="tagValue">200</div>
+    <div class="category-tiny" id="cardCategory">Category</div>
+    <div class="clue" id="cardClue">Clue text goes here.</div>
+    <div class="answer-block" id="answerBlock">
+      <div class="stamp">Confirmed</div>
+      <div class="response" id="cardResponse">What is ___?</div>
+    </div>
+    <div class="btns">
+      <button class="btn-reveal" id="revealBtn">Reveal Answer</button>
+      <button class="btn-close" id="closeBtn">Close File</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DATA = [
+    {
+      name: "Investigation Lingo",
+      clues: [
+        { value: 100, clue: "To hide evidence of something you did so no one can prove it was you.", response: "What is \u201cto cover your tracks\u201d?" },
+        { value: 200, clue: "A piece of evidence so strong it proves guilt beyond any doubt.", response: "What is \u201ca smoking gun\u201d?" },
+        { value: 300, clue: "To lose your composure and reveal the truth after being pushed hard enough.", response: "What is \u201cto crack under pressure\u201d?" },
+        { value: 400, clue: "A clue that seems important but is actually meant to mislead investigators.", response: "What is \u201ca red herring\u201d?" },
+        { value: 500, clue: "To blame or betray someone else in order to protect yourself.", response: "What is \u201cto throw someone under the bus\u201d?" }
+      ]
+    },
+    {
+      name: "Legal &amp; Justice Vocab",
+      clues: [
+        { value: 100, clue: "A person who is accused of a crime and is being defended in court.", response: "What is a \u201cdefendant\u201d?" },
+        { value: 200, clue: "A lawyer who represents the government and tries to prove guilt.", response: "What is a \u201cprosecutor\u201d?" },
+        { value: 300, clue: "Proof that someone was somewhere else when a crime was committed.", response: "What is an \u201calibi\u201d?" },
+        { value: 400, clue: "The act of clearing someone from blame after they were wrongly suspected.", response: "What is \u201cexoneration\u201d?" },
+        { value: 500, clue: "A situation where a person is found guilty of a crime they did not commit.", response: "What is a \u201cwrongful conviction\u201d?" }
+      ]
+    },
+    {
+      name: "Adjectives &amp; Verbs",
+      clues: [
+        { value: 100, clue: "Not guilty of committing a crime; free from blame.", response: "What is \u201cinnocent\u201d?" },
+        { value: 200, clue: "To give a formal statement in court about what you saw or know.", response: "What is \u201cto testify\u201d?" },
+        { value: 300, clue: "To search someone\u2019s clothing or body for weapons or hidden items.", response: "What is \u201cto frisk\u201d?" },
+        { value: 400, clue: "To imprison someone as a punishment for a crime.", response: "What is \u201cto incarcerate\u201d?" },
+        { value: 500, clue: "To officially clear someone from blame or guilt.", response: "What is \u201cto exonerate\u201d?" }
+      ]
+    },
+    {
+      name: "Deception &amp; Lies",
+      clues: [
+        { value: 100, clue: "A statement someone knows to be false, told on purpose to deceive.", response: "What is a \u201clie\u201d?" },
+        { value: 200, clue: "A false story invented and presented as true.", response: "What is a \u201cfabrication\u201d?" },
+        { value: 300, clue: "A false explanation agreed upon in advance to hide the truth.", response: "What is a \u201ccover story\u201d?" },
+        { value: 400, clue: "Deceiving someone by leaving out important information without stating anything false.", response: "What is \u201clying by omission\u201d?" },
+        { value: 500, clue: "The quality of being believable or trustworthy.", response: "What is \u201ccredibility\u201d?" }
+      ]
+    }
+  ];
+
+  const boardEl = document.getElementById('board');
+  const overlay = document.getElementById('overlay');
+  const tagValue = document.getElementById('tagValue');
+  const cardCategory = document.getElementById('cardCategory');
+  const cardClue = document.getElementById('cardClue');
+  const answerBlock = document.getElementById('answerBlock');
+  const cardResponse = document.getElementById('cardResponse');
+  const revealBtn = document.getElementById('revealBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  let activeCell = null;
+
+  // Build category headers
+  DATA.forEach(cat => {
+    const head = document.createElement('div');
+    head.className = 'category-head';
+    head.innerHTML = cat.name;
+    boardEl.appendChild(head);
+  });
+
+  // Build cells row by row (value index 0..4), across categories
+  for (let row = 0; row < 5; row++){
+    DATA.forEach((cat, catIndex) => {
+      const item = cat.clues[row];
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.cat = catIndex;
+      cell.dataset.row = row;
+      cell.innerHTML = '<span class="value">$' + item.value + '</span>';
+      cell.addEventListener('click', () => openClue(catIndex, row, cell));
+      boardEl.appendChild(cell);
+    });
+  }
+
+  function openClue(catIndex, row, cellEl){
+    if (cellEl.classList.contains('done')) return;
+    const cat = DATA[catIndex];
+    const item = cat.clues[row];
+    activeCell = cellEl;
+
+    tagValue.textContent = '$' + item.value;
+    cardCategory.innerHTML = cat.name;
+    cardClue.textContent = item.clue;
+    cardResponse.innerHTML = item.response;
+    answerBlock.classList.remove('show');
+    revealBtn.style.display = 'inline-block';
+    overlay.classList.add('open');
+  }
+
+  revealBtn.addEventListener('click', () => {
+    answerBlock.classList.add('show');
+    revealBtn.style.display = 'none';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    if (activeCell) activeCell.classList.add('done');
+    overlay.classList.remove('open');
+    activeCell = null;
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay){
+      if (activeCell) activeCell.classList.add('done');
+      overlay.classList.remove('open');
+      activeCell = null;
+    }
+  });
+
+  // ---------- Scoreboard ----------
+  const scoreboardEl = document.getElementById('scoreboard');
+  const teams = [
+    { name: 'Team 1', score: 0 },
+    { name: 'Team 2', score: 0 }
+  ];
+
+  function renderScoreboard(){
+    scoreboardEl.innerHTML = '';
+    teams.forEach((team, i) => {
+      const plate = document.createElement('div');
+      plate.className = 'plate';
+      plate.innerHTML = `
+        <div class="team-label">Detective Team</div>
+        <input class="team-name" value="${team.name}" data-i="${i}" />
+        <div class="score" data-score="${i}">${team.score}</div>
+        <div class="btnrow">
+          <button class="adj" data-i="${i}" data-amt="100">+100</button>
+          <button class="adj" data-i="${i}" data-amt="-100">-100</button>
+          <button class="adj" data-i="${i}" data-amt="500">+500</button>
+        </div>
+      `;
+      scoreboardEl.appendChild(plate);
+    });
+
+    scoreboardEl.querySelectorAll('.adj').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.i, 10);
+        const amt = parseInt(btn.dataset.amt, 10);
+        teams[i].score += amt;
+        scoreboardEl.querySelector(`[data-score="${i}"]`).textContent = teams[i].score;
+      });
+    });
+
+    scoreboardEl.querySelectorAll('.team-name').forEach(input => {
+      input.addEventListener('change', () => {
+        const i = parseInt(input.dataset.i, 10);
+        teams[i].name = input.value || ('Team ' + (i+1));
+      });
+    });
+  }
+  renderScoreboard();
+
+  document.getElementById('resetAll').addEventListener('click', () => {
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('done'));
+    teams.forEach(t => t.score = 0);
+    renderScoreboard();
+  });
+</script>
+</body>
+</html>
